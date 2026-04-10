@@ -15,4 +15,3 @@ Global rules:
 - Avoid leaking secrets or provider internals to the client.
 - Do not refactor unrelated files.
 - Do only the requested task.
-<!-- - When choosing between two implementations, ask first. -->
