@@ -53,7 +53,27 @@ Behavior:
 
 - We are in development phase. No backwards-constitutionality or migration path is required, so sweeping changes can be made safely.
 - No dual paths, no deprecated aliases, no legacy support unless explicitly required.
-- Make small commits with related changes. Write detailed description about the changes and implementation decisions
 
-- Git
-    - Do not ask for permission for `git add` or `git commit` when asked to create a commit for current changes
+## Git Workflow (Mandatory)
+- After every successful code change, create commit(s) automatically without waiting for me to ask.
+- Use small, task-scoped commits.
+- Stage only files changed for the current task; never include unrelated files.
+- Unrelated modified or untracked files are not a blocker for committing task changes.
+- If unrelated modified files exist, exclude them from commit.
+- Never use `git add .` or `git commit -a`.
+- Write detailed description about the changes and implementation decisions.
+- Every commit must include a message body (description), not just a one-line title.
+- Use `git commit -m "<type>: <summary>" -m "<body>"` so title and description are always present.
+- The commit body must include a `Decision Summary` section.
+- The `Decision Summary` section must cover:
+  1. Problem observed
+  2. Root cause
+  3. Scope decisions (included and excluded)
+  4. Solution chosen
+  5. Alternatives considered and why not chosen
+  6. Risk and regression considerations
+  7. Verification performed (tests/checks run)
+- Keep commit description details focused only on files included in that commit.
+- If any detail is uncertain, state assumptions explicitly in the commit description.
+- In the final response, include commit hash and committed file list.
+- Do not ask for permission for `git add` or `git commit` to create a commit
