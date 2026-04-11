@@ -33,7 +33,6 @@ Behavior:
 - Do only the requested task
 - Do not refactor unrelated code
 - Don't ask for permission. you have permission to make changes in this repo and commit changes using git
-<!-- - If something is unclear, choose the simpler path and log reason for decision -->
 
 - Utility functions
     - For simple operations use existing utility libraries
@@ -54,7 +53,7 @@ Behavior:
 
 - We are in development phase. No backwards-constitutionality or migration path is required, so sweeping changes can be made safely.
 - No dual paths, no deprecated aliases, no legacy support unless explicitly required.
-- Commit changes after each completed task
-- No need to ask for permissions
+- Make small commits with related changes. Write detailed description about the changes and implementation decisions
 
-<!-- buysafe.homes -->
+- Git
+    - Do not ask for permission for `git add` or `git commit` when asked to create a commit for current changes
