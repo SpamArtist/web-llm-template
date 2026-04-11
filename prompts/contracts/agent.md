@@ -48,10 +48,10 @@ Behavior:
 
 - Typescript
     - Follow strict typescript rules
-    - Avoid Typescript `unkown` as much as possible.
+    - Avoid Typescript `unknown` as much as possible.
     - All types and interfaces should be in a common file, separate from where the logic is based.
 
-- We are in development phase. No backwards-constitutionality or migration path is required, so sweeping changes can be made safely.
+- We are in development phase. No backwards compatibility or migration path is required, so sweeping changes can be made safely.
 - No dual paths, no deprecated aliases, no legacy support unless explicitly required.
 
 ## Git Workflow (Mandatory)
