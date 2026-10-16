@@ -54,6 +54,12 @@ Behavior:
 - We are in development phase. No backwards compatibility or migration path is required, so sweeping changes can be made safely.
 - No dual paths, no deprecated aliases, no legacy support unless explicitly required.
 
+## Generated evidence
+- Write test screenshots, traces, recordings, PDFs, response captures, and other run output to ignored `.artifacts/` or the test runner's ignored output directory.
+- Attach evidence to the test report, CI run, or issue when it needs to be shared. Keep verification notes in Git as text with commands and results; do not link them to ignored local files.
+- Commit a visual baseline or fixture only when tests or product documentation deliberately depend on that exact file. Give it a descriptive source/fixture location, not a generated evidence directory.
+- Before committing, inspect staged paths and exclude generated evidence. Do not use `git add -f` to bypass an ignore rule for run output.
+
 ## Git Workflow (Mandatory)
 - After every successful code change, create commit(s) automatically without waiting for me to ask.
 - Use small, task-scoped commits.
