@@ -143,5 +143,6 @@ vite.config.ts.timestamp-*
 # Generated verification evidence and test reports
 **/.artifacts/
 **/docs/evidence/
+**/output/pdf/
 **/test-results/
 **/playwright-report/
