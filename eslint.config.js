@@ -19,7 +19,7 @@ export default tseslint.config(
   {
     files: ['src/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     rules: {
-      'max-lines': ['error', 1000],
+      'max-lines': ['error', 350],
     },
   },
   {
@@ -27,7 +27,7 @@ export default tseslint.config(
     language: 'css/css',
     plugins: { css, local: { rules: { 'css-max-lines': cssMaxLines } } },
     rules: {
-      'local/css-max-lines': ['error', 1000],
+      'local/css-max-lines': ['error', 350],
     },
   },
 );
