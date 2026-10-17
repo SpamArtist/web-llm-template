@@ -2,7 +2,9 @@
   "name": "web-llm-template",
   "private": true,
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {},
   "devDependencies": {
     "@eslint/css": "^2.0.1",
