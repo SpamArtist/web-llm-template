@@ -23,6 +23,36 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/server/http/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          { name: 'drizzle-orm', message: 'Call a use case; keep queries in src/db/.' },
+          { name: 'pg', message: 'Call a use case; keep DB access in src/db/.' },
+        ],
+        patterns: [
+          { group: ['drizzle-orm/*', 'pg/*'], message: 'Call a use case; keep DB access in src/db/.' },
+          { regex: '(?:^|[/@])db(?:/|$)', message: 'HTTP adapters must call use cases, not import src/db/.' },
+        ],
+      }],
+    },
+  },
+  {
+    files: ['src/server/use-cases/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          { name: 'drizzle-orm', message: 'Call a persistence function in src/db/.' },
+          { name: 'pg', message: 'Call a persistence function in src/db/.' },
+        ],
+        patterns: [
+          { group: ['drizzle-orm/*', 'pg/*'], message: 'Call a persistence function in src/db/.' },
+          { regex: '(?:^|[/@])db/schema(?:\\.[^/]+|/.*)?$', message: 'Use cases must call persistence functions, not import table schemas.' },
+        ],
+      }],
+    },
+  },
+  {
     files: ['src/**/*.css'],
     language: 'css/css',
     plugins: { css, local: { rules: { 'css-max-lines': cssMaxLines } } },

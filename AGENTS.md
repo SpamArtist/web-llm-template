@@ -1,3 +1,7 @@
+## Backend modules
+
+For new Node/TypeScript backend flows, follow [the backend architecture contract](contracts/BACKEND_ARCHITECTURE.md).
+
 ## Generated evidence
 - Write test screenshots, traces, recordings, PDFs, response captures, and other run output to ignored `.artifacts/` or the test runner's ignored output directory.
 - Attach evidence to the test report, CI run, or issue when it needs to be shared; do not link tracked docs to ignored local files.
