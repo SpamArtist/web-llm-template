@@ -146,3 +146,5 @@ vite.config.ts.timestamp-*
 **/output/pdf/
 **/test-results/
 **/playwright-report/
+**/.scratch
+**/.local
