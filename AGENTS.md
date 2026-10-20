@@ -10,13 +10,17 @@ For type ownership and imports, follow [the coding standards](contracts/CODING_S
 - Commit a visual baseline or fixture only when tests or product documentation deliberately depend on that exact file. Give it a descriptive source/fixture location, not a generated evidence directory.
 - Before committing, inspect staged paths and exclude generated evidence. Do not use `git add -f` to bypass an ignore rule for run output.
 
-For issue verification records, follow `contracts/verification.md`.
+For issue verification records, follow [the verification contract](contracts/verification.md).
+
+## Requirements
+
+When initializing a project or starting implementation, follow [the tracker and approved-spec contract](contracts/issue-tracker.md).
 
 ## Git Workflow (Mandatory)
 
 - After every successful issue completion, create commit(s) automatically without waiting for me to ask.
 - Use small, task-scoped commits.
-- [$caveman](/Users/xbotpc/.agents/skills/caveman/SKILL.md) ultra to write commits
+- Use the `caveman` skill's ultra style for commits when available; otherwise use concise fragments while preserving technical meaning.
 - Stage only files changed for the current task; never include unrelated files.
 - Unrelated modified or untracked files are not a blocker for committing task changes.
 - If unrelated modified files exist, exclude them from commit.

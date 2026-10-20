@@ -12,4 +12,4 @@ Review new backend flows against [the backend architecture contract](BACKEND_ARC
 
 Tests must still run and validate product behavior if `prototype/` is removed. Build test inputs and expected results from documented product contracts or independently authored fixtures. Do not copy or derive fixtures, baselines, or expected values from prototype code, sample data, screenshots, or runtime output.
 
-When reviewing a test change, check where its fixtures and expected values came from. A passing test is insufficient if its expected result came from a prototype. Direct references are blocked by CI; review must catch copied or derived dependencies.
+When reviewing a test change, check where its fixtures and expected values came from. A passing test is insufficient if its expected result came from a prototype. CI runs `bash scripts/check-test-isolation.sh` to block direct prototype paths and startup commands in tracked `tests/` files. This text search cannot detect copied or derived dependencies; review must catch them.
