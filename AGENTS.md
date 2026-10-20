@@ -12,9 +12,11 @@ For type ownership and imports, follow [the coding standards](contracts/CODING_S
 
 For issue verification records, follow [the verification contract](contracts/verification.md).
 
-## Requirements
+## Requirements and checks
 
 When initializing a project or starting implementation, follow [the tracker and approved-spec contract](contracts/issue-tracker.md).
+
+For local and CI validation, follow [the check contract](contracts/checks.md).
 
 ## Git Workflow (Mandatory)
 

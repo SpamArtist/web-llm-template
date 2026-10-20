@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = `http://127.0.0.1:${process.env.WEB_PORT ?? 4173}`;
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${process.env.WEB_PORT ?? 4173}`;
+const webServerCommand = process.env.PLAYWRIGHT_WEB_SERVER_COMMAND;
 
 export default defineConfig({
   testDir: './tests/ui',
@@ -11,11 +12,11 @@ export default defineConfig({
     trace: 'retain-on-failure',
     ...devices['Desktop Chrome'],
   },
-  webServer: {
-    command: 'npm run dev',
+  // See contracts/checks.md before enabling the browser suite.
+  webServer: webServerCommand ? {
+    command: webServerCommand,
     url: baseURL,
-    env: { PRICING_PLAYWRIGHT_TEST: '1' },
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
-  },
+  } : undefined,
 });
