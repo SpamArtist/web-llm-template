@@ -4,6 +4,8 @@ For new Node/TypeScript backend flows, follow [the backend architecture contract
 
 For type ownership and imports, follow [the coding standards](contracts/CODING_STANDARDS.md#type-ownership).
 
+For projects that expose HTTP APIs, follow [the HTTP API standards](contracts/CODING_STANDARDS.md#http-apis).
+
 ## Generated evidence
 - Write test screenshots, traces, recordings, PDFs, response captures, and other run output to ignored `.artifacts/` or the test runner's ignored output directory.
 - Attach evidence to the test report, CI run, or issue when it needs to be shared; do not link tracked docs to ignored local files.
