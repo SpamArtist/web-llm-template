@@ -41,8 +41,20 @@ Public and private repositories run ticket planning inside local Codex on the us
 
 An eligible source spec without `auto-approve` gets a complete draft breakdown prepared once, then waits for that label before publication. Repeated checks of the unchanged spec must not repeatedly regenerate its waiting draft.
 
+If the source requirements change while the draft waits, make a new complete draft from the current requirements before publication. When `auto-approve` is present, publish the new draft under that label approval. Do not publish a draft based on obsolete requirements.
+
 After successful publication, ordinary manual invocations report that publication is complete and leave existing tickets unchanged. Revising a published breakdown requires an explicit revision request.
 
 When contradictory or missing requirements prevent a reliable breakdown, stop and report the specific questions on the source issue. Do not invent requirements to finish the breakdown. This rule also applies when `auto-approve` is present.
 
-Changes to a waiting draft's source and recovery from partial publication remain to be designed. These instructions do not establish a running automation.
+The user supplies missing requirements by updating the source issue's body, then starting planning manually. Comments can explain decisions, but the issue body remains the authoritative requirements source.
+
+### Recovery from partial publication
+
+If a run publishes only part of a breakdown, check the existing issues and relationships before continuing. Finish the same breakdown without duplicate issues or relationships. Preserve issues already created. Stop and report if recovery would replace human edits.
+
+### Repository version
+
+Use a separate checkout of the latest remote default branch for planning. Record the commit used for the run. Do not include unfinished changes from the user's local working directory.
+
+Draft storage, coordination between runs, and result reporting remain to be designed. These instructions do not establish a running automation.
