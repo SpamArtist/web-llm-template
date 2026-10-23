@@ -28,7 +28,7 @@ Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) w
 
 Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope.
 
-Public and private repositories run ticket planning inside local Codex on the user's machine. Use the local ChatGPT subscription session and this repository's skill and planning rules. See the [execution decision](../docs/adr/0003-run-all-ticket-planning-in-local-codex.md).
+Public and private repositories run ticket planning inside local Codex on the user's machine. Use the local ChatGPT subscription session and this repository's skill and planning rules. See the [execution decision](../docs/adr/0002-run-all-ticket-planning-in-local-codex.md).
 
 ### Triggers and approval
 
