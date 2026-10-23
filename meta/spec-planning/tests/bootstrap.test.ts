@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { githubRepository } from '../bootstrap/context.js';
+import { registerOwner } from '../db/local.js';
 import { bootstrapFixture, cliPath, owner } from './bootstrap-fixture.js';
 
 const fixtures: ReturnType<typeof bootstrapFixture>[] = [];
@@ -69,6 +70,12 @@ describe('profile planning registry', () => {
     expect(() => f.call('begin-create', { session: 'a' })).toThrow(/Confirm no matching/);
     f.call('native-reconcile', { state: 'unknown' });
     expect(() => f.call('begin-create', { session: 'a' })).toThrow(/Confirm no matching/);
+  });
+  it('accepts the canonical checkout recorded by local owner setup', async () => {
+    const f = fixture(); f.call('reserve', { session: 'a' });
+    const config = await registerOwner(f.root, 'Example/Generated');
+    const registered = f.call('register', { session: 'a', owner: config.ownerId, project: 'p' });
+    expect(registered.record).toMatchObject({ planningRoot: config.root, ownerId: config.ownerId, phase: 'ready' });
   });
   it('preserves unknown creation and requires stopped-session recovery plus complete inventory', () => {
     const f = fixture(); f.ready(); f.call('begin-create', { session: 'session-a' });

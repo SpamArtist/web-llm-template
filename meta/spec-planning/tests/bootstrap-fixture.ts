@@ -8,7 +8,7 @@ import type { BootstrapOptions } from '../bootstrap/bootstrap.types.js';
 export const owner = '12345678-1234-1234-1234-123456789abc';
 export const cliPath = resolve('meta/spec-planning/bootstrap/cli.js');
 export function bootstrapFixture() {
-  const directory = realpathSync(mkdtempSync(join(tmpdir(), 'planning-bootstrap-')));
+  const directory = realpathSync.native(mkdtempSync(join(tmpdir(), 'planning-bootstrap-')));
   const profile = join(directory, 'profile');
   const env = { ...process.env, CODEX_HOME: profile };
   function checkout(name: string, origin = 'https://github.com/Example/Generated.git') {

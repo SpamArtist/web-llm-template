@@ -31,7 +31,7 @@ function git(root, ...args) {
 }
 
 export function checkoutIdentity(cwd) {
-  const checkout = realpathSync(git(cwd, 'rev-parse', '--show-toplevel'));
+  const checkout = realpathSync.native(git(cwd, 'rev-parse', '--show-toplevel'));
   return { checkout, repository: githubRepository(git(checkout, 'remote', 'get-url', 'origin')) };
 }
 

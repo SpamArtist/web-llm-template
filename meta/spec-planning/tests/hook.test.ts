@@ -11,7 +11,7 @@ const definition = config.hooks.SessionStart[0];
 const command = definition.hooks[0];
 const event = { hook_event_name: 'SessionStart', session_id: 'hook-test-session', source: 'startup' };
 const windows = process.platform === 'win32';
-const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'spec-planning-hook-')));
+const scratch = realpathSync.native(mkdtempSync(join(tmpdir(), 'spec-planning-hook-')));
 let checkout: string;
 let profile: string;
 let registry: string;
@@ -23,12 +23,16 @@ function git(cwd: string, ...args: string[]) {
 
 function invoke(input = JSON.stringify(event), cwd = checkout, path = process.env.PATH) {
   const result = spawnSync(windows ? 'cmd.exe' : '/bin/sh', windows
-    ? ['/d', '/s', '/c', command.commandWindows]
+    // Codex passes one raw, outer-quoted command to cmd.exe /C.
+    ? ['/c', `"${command.commandWindows}"`]
     : ['-c', command.command], {
     cwd, input, encoding: 'utf8', timeout: 6000,
+    windowsVerbatimArguments: windows,
     env: { ...process.env, CODEX_HOME: profile, PATH: path },
   });
-  expect(result.error).toBeUndefined();
+  // Like Codex, accept a hook closing stdin before the event finishes writing.
+  const closedStdin = result.error && 'code' in result.error && result.error.code === 'EPIPE';
+  if (!closedStdin) expect(result.error).toBeUndefined();
   expect(result.status).toBe(0);
   return result.stdout.trim();
 }
