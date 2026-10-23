@@ -28,12 +28,12 @@ Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) w
 
 Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope.
 
-Private repositories run planning in GitHub Actions with ChatGPT subscription-backed Codex authentication. Public repositories run planning locally inside Codex on the user's machine. Both use this repository's skill and planning rules. See the [execution decision](../docs/adr/0002-route-planning-by-repository-visibility.md).
+Public and private repositories run ticket planning inside local Codex on the user's machine. Use the local ChatGPT subscription session and this repository's skill and planning rules. See the [execution decision](../docs/adr/0003-run-all-ticket-planning-in-local-codex.md).
 
 ### Triggers and approval
 
-- Private repositories respond to eligible issue creation and relevant label additions, and support manual invocation.
-- Public repositories use a local Codex scheduled task every two hours, plus manual invocation.
+- Both public and private repositories use a local Codex scheduled task every two hours. Manual starts are also supported.
+- Each scheduled check uses `gh` to find eligible issues and check their current labels.
 - Adding `auto-approve` signals approval to publish the complete locally generated breakdown. Do not introduce a separate comment command or draft-version approval protocol. The other eligibility rules still apply.
 - Editing a source spec after publication must not automatically rewrite its published tickets.
 
@@ -45,4 +45,4 @@ After successful publication, ordinary manual invocations report that publicatio
 
 When contradictory or missing requirements prevent a reliable breakdown, stop and report the specific questions on the source issue. Do not invent requirements to finish the breakdown. This rule also applies when `auto-approve` is present.
 
-Authentication persistence, changes to a waiting draft's source, and partial-publication recovery remain to be designed; these instructions do not establish a running automation.
+Changes to a waiting draft's source and recovery from partial publication remain to be designed. These instructions do not establish a running automation.

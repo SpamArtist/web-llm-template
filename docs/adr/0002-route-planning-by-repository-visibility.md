@@ -1,4 +1,10 @@
+---
+status: superseded by ADR-0003
+---
+
 # Route ticket planning by repository visibility
+
+This decision is no longer active. [ADR 0003](0003-run-all-ticket-planning-in-local-codex.md) replaces it. The text below records the earlier decision only.
 
 Private repositories run ticket planning in GitHub Actions using ChatGPT subscription-backed Codex authentication. Public repositories run ticket planning locally inside Codex on the user's machine. Both paths use the repository's to-tickets skill and the same eligibility and approval rules. This preserves subscription usage while keeping account-authenticated CI out of public repositories.
 
