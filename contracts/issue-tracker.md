@@ -45,7 +45,9 @@ Multiple machines can process the same repository. Each spec's planning session 
 
 Scheduled and manual runs must respect the same session owner. Store one shared ownership record per spec on GitHub. The first successful claim establishes the owner; other machines and app instances skip that spec. Keep ownership while the draft waits for approval.
 
-Transfer ownership only after an explicit user request. Do not transfer ownership automatically because the owner is asleep, offline, or temporarily disconnected. Recovery of local drafts after a transfer remains to be decided.
+Transfer ownership only after an explicit user request. Do not transfer ownership automatically because the owner is asleep, offline, or temporarily disconnected.
+
+After a transfer, use the existing draft files when available. If those files are unavailable, rebuild unpublished work from the source spec and existing GitHub tickets. Preserve published tickets and human edits. Stop and ask if the same breakdown cannot be recovered reliably.
 
 ### Drafts, completion, and missing requirements
 
@@ -77,4 +79,16 @@ After all tickets and grouping issues are published and their contents, parent r
 
 Show complete drafts in local Codex. Add a short comment on the source issue when a draft is ready, publication completes, or work stops. The completion comment must identify the published issues. Do not repeat reports when nothing changes.
 
-Draft recovery after ownership transfer, setup in generated repositories, and retry limits remain to be decided. The shared claim implementation must be checked for concurrent claims before use. These instructions do not establish a running automation.
+### Setup in generated repositories
+
+Provide one setup procedure in the repository for users to run through local Codex. The procedure must check authentication and permissions, create missing labels, and configure the two-hour schedule. Each machine requires explicit setup. Keep the required skill and workflow instructions in this repository; do not depend on globally installed skills.
+
+### Retry limits
+
+Allow up to three retries after the initial failure for temporary network or service failures. Stop immediately for missing permissions, invalid authentication, or conflicting requirements. Keep recovery files and report the failure. When retries are exhausted, require a manual restart; scheduled checks must not start a fresh retry cycle for that stopped work.
+
+### Reference examples
+
+The template repository's [example spec issue 18](https://github.com/SpamArtist/web-llm-template/issues/18) and all its descendants are reference examples, not approved work. Keep that tree excluded. This exception identifies the linked example tree; it does not exclude an unrelated issue numbered 18 in a generated repository.
+
+The shared claim implementation must be checked for concurrent claims before use. These instructions do not establish a running automation.

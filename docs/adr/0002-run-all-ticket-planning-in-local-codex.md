@@ -8,6 +8,8 @@ Run planning in a separate checkout of the latest remote default branch, and rec
 
 Multiple machines can process a repository, but each spec's planning session has one owner: one machine and Codex app instance. Scheduled and manual runs must respect the same owner. Different specs can run on different machines.
 
-Store one shared ownership record per spec on GitHub. The first successful claim establishes the owner, including while a draft waits for approval. Transfer ownership only after an explicit user request. A sleeping or disconnected machine can still hold valid drafts, so loss of connectivity does not authorize automatic takeover. Draft recovery after transfer remains undecided.
+Store one shared ownership record per spec on GitHub. The first successful claim establishes the owner, including while a draft waits for approval. Transfer ownership only after an explicit user request. A sleeping or disconnected machine can still hold valid drafts, so loss of connectivity does not authorize automatic takeover.
+
+If a new owner cannot obtain the local draft files, rebuild unpublished work from the source spec and existing tickets. Preserve published tickets and human edits. Stop and ask when reliable recovery is not possible. Each machine uses the repository's setup procedure to check access, create missing labels, and configure the schedule.
 
 The label rules, draft approval rules, and publication scope stay the same. This design does not require Codex credentials in GitHub secrets or a process to save refreshed credentials from an Actions runner. No scheduled task or ticket-planning runtime has been enabled by this decision.
