@@ -6,7 +6,7 @@ import cssMaxLines from './scripts/css-max-lines-rule.js';
 import noInlineTypes from './scripts/no-inline-types-rule.js';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', '.local/**', 'prototype/**', 'drizzle/**', 'test-results/**'] },
+  { ignores: ['dist/**', 'node_modules/**', '**/.local/**', '**/.artifacts/**', '**/.scratch/**', 'prototype/**', 'drizzle/**', 'test-results/**'] },
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     extends: [eslint.configs.recommended, ...tseslint.configs.recommended],

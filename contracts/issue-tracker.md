@@ -5,7 +5,7 @@
 Choose one canonical tracker and identify the approved requirements before implementing work. For a generated repository hosted on GitHub, the default tracker is GitHub Issues. During initialization, replace the selections below with the project's choices:
 
 - **Tracker:** GitHub Issues for this repository.
-- **Approved spec location:** Not selected yet. Record the approved implementation issue URL or another canonical requirements location before starting implementation. For multiple tasks, identify the approved issue or spec for each task at that source.
+- **Approved spec location:** Each task's approved GitHub issue body. For template development, [issue 19](https://github.com/SpamArtist/web-llm-template/issues/19) records the approved local spec-planning work. Generated projects must select their own approved issues; this example does not authorize work in a generated project.
 
 **Customization point:** Teams using another tracker must replace these selections with its name, location, and approved-spec convention. If requirements live outside the tracker, link each work item to that authoritative spec. Keep one authoritative requirements source for each task.
 
@@ -91,4 +91,4 @@ Allow up to three retries after the initial failure for temporary network or ser
 
 The template repository's [example spec issue 18](https://github.com/SpamArtist/web-llm-template/issues/18) and all its descendants are reference examples, not approved work. Keep that tree excluded. This exception identifies the linked example tree; it does not exclude an unrelated issue numbered 18 in a generated repository.
 
-The shared claim implementation must be checked for concurrent claims before use. These instructions do not establish a running automation.
+Use [the local planning runbook](../docs/spec-planning.md) for setup, commands, storage, and recovery. The shared claim implementation must be checked for concurrent claims before use. These instructions do not establish a running automation.

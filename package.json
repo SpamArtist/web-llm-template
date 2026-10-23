@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "npm run typecheck && npm run lint",
+    "check": "npm run typecheck && npm run lint && npm test",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run",
+    "spec:plan": "tsx scripts/spec-planning.ts"
   },
   "dependencies": {},
   "devDependencies": {

@@ -6,11 +6,12 @@ After `npm ci`, run `npm run check`. The baseline CI workflow runs that same com
 | --- | --- |
 | `npm run typecheck` | TypeScript configuration files for Vite, Vitest, and Playwright, plus any TypeScript added under `src/`, `tests/`, or `scripts/` |
 | `npm run lint` | JavaScript and TypeScript files, including repository configuration and lint rules, plus application CSS when present |
-| `npm run check` | Typecheck followed by lint; either failure fails the command |
+| `npm test` | Vitest tests for local spec planning, GitHub adapters, and publication recovery |
+| `npm run check` | Typecheck, lint, then tests; any failure fails the command |
 
 The existing `tsconfig.json` checks real configuration files now, so typechecking is enabled even before application source exists. Extend its inputs and compiler options as the application grows; all new TypeScript application code must be covered by a `typecheck` script. JavaScript lint rules are linted, not typechecked.
 
-The template has no application test suites yet. Vitest and Playwright configuration are starting points; no test runner is enabled in the baseline graph until tests exist. Do not use options such as `--passWithNoTests` to make an empty suite green.
+The template includes tests for its spec-planning workflow. Vitest runs these tests in the baseline check. Playwright remains a starting point for generated applications. Do not use options such as `--passWithNoTests` to make an empty suite green.
 
 ## Adding tests
 
