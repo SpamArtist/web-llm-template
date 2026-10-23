@@ -26,4 +26,8 @@ Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) w
 - `auto-approve`: on an eligible source spec, authorizes publication of the complete locally generated breakdown without interactive approval, as defined by the repository skill. It does not authorize implementation.
 - `reference-only`: excludes the issue and all its descendants from automation, regardless of the other labels. Check ancestors as well as the source issue; descendants need not repeat this label.
 
-Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope. The execution environment and approval-resumption mechanism remain to be designed; these instructions do not establish a running automation.
+Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope.
+
+Private repositories run planning in GitHub Actions with ChatGPT subscription-backed Codex authentication. Public repositories run planning locally inside Codex on the user's machine. Both use this repository's skill and planning rules. See the [execution decision](../docs/adr/0002-route-planning-by-repository-visibility.md).
+
+Authentication persistence, local triggering, and the approval-resumption mechanism remain to be designed; these instructions do not establish a running automation.
