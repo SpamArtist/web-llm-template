@@ -30,4 +30,11 @@ Planning ends after publishing and verifying the grouping issues, implementation
 
 Private repositories run planning in GitHub Actions with ChatGPT subscription-backed Codex authentication. Public repositories run planning locally inside Codex on the user's machine. Both use this repository's skill and planning rules. See the [execution decision](../docs/adr/0002-route-planning-by-repository-visibility.md).
 
-Authentication persistence, local triggering, and the approval-resumption mechanism remain to be designed; these instructions do not establish a running automation.
+### Triggers and approval
+
+- Private repositories respond to eligible issue creation and relevant label additions, and support manual invocation.
+- Public repositories use a local Codex scheduled task every two hours, plus manual invocation.
+- Adding `auto-approve` signals approval to publish the complete locally generated breakdown. Do not introduce a separate comment command or draft-version approval protocol. The other eligibility rules still apply.
+- Editing a source spec after publication must not automatically rewrite its published tickets.
+
+Authentication persistence, behavior while `auto-approve` is absent, explicit reruns, and failure recovery remain to be designed; these instructions do not establish a running automation.
