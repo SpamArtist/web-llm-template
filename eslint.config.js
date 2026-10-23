@@ -18,7 +18,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/**/*.{js,mjs,cjs,ts,tsx,mts,cts}', 'meta/spec-planning/{db,shared,use-cases}/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
+    files: ['src/**/*.{js,mjs,cjs,ts,tsx,mts,cts}', 'meta/spec-planning/{db,shared,use-cases,bootstrap,hooks}/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     rules: {
       'max-lines': ['error', 350],
     },

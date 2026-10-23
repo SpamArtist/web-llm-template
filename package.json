@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "spec:plan": "tsx meta/spec-planning/cli.ts"
+    "spec:plan": "tsx meta/spec-planning/cli.ts",
+    "spec:bootstrap": "node meta/spec-planning/bootstrap/cli.js"
   },
   "dependencies": {},
   "devDependencies": {

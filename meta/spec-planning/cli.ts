@@ -20,7 +20,7 @@ const { values, positionals } = parseArgs({
   },
 });
 
-const usage = 'Commands: setup [--new-owner], scan --owner UUID, begin --owner UUID --issue N [--manual], accept --owner UUID --issue N --run UUID --file draft.json, publish --owner UUID --issue N --run UUID, stop --owner UUID --issue N --run UUID --file questions.txt, status --owner UUID --issue N, recover --owner UUID --issue N --expected SHA --confirm-stopped, transfer --owner NEW_UUID --issue N --expected SHA [--confirm-stopped]';
+const usage = 'Commands: setup [--new-owner | --owner UUID], scan --owner UUID, begin --owner UUID --issue N [--manual], accept --owner UUID --issue N --run UUID --file draft.json, publish --owner UUID --issue N --run UUID, stop --owner UUID --issue N --run UUID --file questions.txt, status --owner UUID --issue N, recover --owner UUID --issue N --expected SHA --confirm-stopped, transfer --owner NEW_UUID --issue N --expected SHA [--confirm-stopped]';
 const action = positionals[0];
 const output = (value: unknown) => process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 
@@ -30,11 +30,18 @@ async function main(): Promise<void> {
   const rootResult = await command('git', ['rev-parse', '--show-toplevel'], process.cwd());
   if (rootResult.failed) throw new Error(rootResult.stderr);
   const root = rootResult.stdout.trim();
+  if (action === 'setup' && values.owner && values['new-owner']) throw new Error('Choose --owner or --new-owner, not both.');
   const github = createGitHub(root);
   const repo = await github.repository();
   if (action === 'setup') {
+    // Validate explicit adoption before labels or owner state can change.
+    const existingOwner = values.owner ? await loadConfig(root, values.owner, repo.slug) : null;
     if (!repo.canPush) throw new Error('Setup requires repository write access for shared ownership refs and issues.');
-    for (const path of ['.agents/skills/spec-planning/SKILL.md', '.agents/skills/setup-spec-planning/SKILL.md', '.agents/skills/to-tickets/SKILL.md', 'meta/spec-planning/cli.ts', 'meta/spec-planning/use-cases/session.ts']) {
+    for (const path of [
+      '.agents/skills/spec-planning/SKILL.md', '.agents/skills/setup-spec-planning/SKILL.md',
+      '.agents/skills/to-tickets/SKILL.md', 'meta/spec-planning/cli.ts', 'meta/spec-planning/use-cases/session.ts',
+      '.codex/hooks.json', 'meta/spec-planning/bootstrap/cli.js', 'meta/spec-planning/hooks/session-start.js',
+    ]) {
       const installed = await command('gh', ['api', '--hostname', 'github.com', '--silent', `repos/${repo.slug}/contents/${path}?ref=${repo.defaultSha}`], root);
       if (installed.failed) throw new Error(`Install the complete planning workflow on the remote default branch before setup. Missing or inaccessible: ${path}`);
     }
@@ -44,7 +51,7 @@ async function main(): Promise<void> {
       ['auto-approve', 'Approve publication of the complete local ticket draft'],
       ['reference-only', 'Reference example; exclude this issue and its descendants'],
     ]) await github.ensureLabel(label, description);
-    output({ config: await registerOwner(root, repo.slug, values['new-owner']), scheduleEnabled: false,
+    output({ config: existingOwner ?? await registerOwner(root, repo.slug, values['new-owner']), scheduleEnabled: false,
       next: 'Use the repository setup-spec-planning skill to configure the native Codex two-hour schedule.' });
     return;
   }

@@ -49,7 +49,7 @@ describe('setup CLI entry point', () => {
     const initialGh = await readState();
     expect(initialGh.labels).toEqual(['spec', 'ready-for-agent', 'auto-approve', 'reference-only']);
     expect(initialGh.writes).toHaveLength(4);
-    expect(initialGh.requests.filter(({ endpoint }) => endpoint.includes('/contents/'))).toHaveLength(5);
+    expect(initialGh.requests.filter(({ endpoint }) => endpoint.includes('/contents/'))).toHaveLength(8);
     const secondRun = await cli('setup');
     expect(secondRun.failed).toBe(false);
     expect((JSON.parse(secondRun.stdout) as CliSetupResult).config).toEqual(first.config);
@@ -69,6 +69,23 @@ describe('setup CLI entry point', () => {
     expect(result.stderr).toContain('requires repository write access');
     expect((await readState()).writes).toEqual([]);
     await expect(readFile(join(root, '.local/spec-planning/default-owner.json'))).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+  it('adopts a specific existing owner without replacing another profile default', async () => {
+    const first: CliSetupResult = JSON.parse((await cli('setup')).stdout);
+    const second: CliSetupResult = JSON.parse((await cli('setup', '--new-owner')).stdout);
+    const adopted = await cli('setup', '--owner', first.config.ownerId);
+    expect(adopted.failed).toBe(false);
+    expect(JSON.parse(adopted.stdout).config).toEqual(first.config);
+    expect(JSON.parse(await readFile(join(root, '.local/spec-planning/default-owner.json'), 'utf8'))).toEqual(second.config);
+    const ambiguous = await cli('setup', '--owner', first.config.ownerId, '--new-owner');
+    expect(ambiguous.failed).toBe(true);
+    expect(ambiguous.stderr).toContain('not both');
+  });
+  it('refuses a missing explicit owner before changing labels', async () => {
+    const result = await cli('setup', '--owner', '00000000-0000-4000-8000-000000000000');
+    expect(result.failed).toBe(true);
+    expect(result.stderr).toContain('not registered');
+    expect((await readState()).writes).toEqual([]);
   });
   it('refuses a missing remote workflow before any setup changes', async () => {
     await writeFile(statePath, JSON.stringify({ ...await readState(), installed: false }));
