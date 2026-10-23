@@ -11,6 +11,15 @@ _Avoid_: Implementation ticket
 **Ticket breakdown**:
 The complete set of grouping issues, implementation tickets, parent relationships, and blocking dependencies derived from a source spec.
 
+**Draft breakdown**:
+A complete ticket breakdown prepared for publication but not yet published.
+
+**Published breakdown**:
+A ticket breakdown whose issues and relationships have been published and verified in the tracker.
+
+**Revision request**:
+An explicit request to change a previously published breakdown, distinct from an ordinary invocation that checks completion.
+
 **Grouping issue**:
 A container for implementation or review tickets, rather than an executable work item.
 

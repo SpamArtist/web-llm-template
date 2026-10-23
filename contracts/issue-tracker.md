@@ -37,4 +37,12 @@ Private repositories run planning in GitHub Actions with ChatGPT subscription-ba
 - Adding `auto-approve` signals approval to publish the complete locally generated breakdown. Do not introduce a separate comment command or draft-version approval protocol. The other eligibility rules still apply.
 - Editing a source spec after publication must not automatically rewrite its published tickets.
 
-Authentication persistence, behavior while `auto-approve` is absent, explicit reruns, and failure recovery remain to be designed; these instructions do not establish a running automation.
+### Drafts, completion, and missing requirements
+
+An eligible source spec without `auto-approve` gets a complete draft breakdown prepared once, then waits for that label before publication. Repeated checks of the unchanged spec must not repeatedly regenerate its waiting draft.
+
+After successful publication, ordinary manual invocations report that publication is complete and leave existing tickets unchanged. Revising a published breakdown requires an explicit revision request.
+
+When contradictory or missing requirements prevent a reliable breakdown, stop and report the specific questions on the source issue. Do not invent requirements to finish the breakdown. This rule also applies when `auto-approve` is present.
+
+Authentication persistence, changes to a waiting draft's source, and partial-publication recovery remain to be designed; these instructions do not establish a running automation.

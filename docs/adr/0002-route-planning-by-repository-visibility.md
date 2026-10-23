@@ -4,7 +4,7 @@ Private repositories run ticket planning in GitHub Actions using ChatGPT subscri
 
 The private path targets GitHub-hosted runners. Their temporary filesystem requires restoring authentication from secure storage and preserving Codex's refreshed credentials for subsequent runs. The secure storage mechanism and serialization strategy remain undecided. Credentials are deployment configuration, never template contents or draft artifacts. See the [official account-authentication CI guide](https://learn.chatgpt.com/docs/auth/ci-cd-auth).
 
-The public path uses the local Codex subscription session, invoked by a local scheduled task every two hours or manually. The private path responds to eligible issue creation and relevant label additions, and also supports manual invocation. Editing a source spec after publication does not automatically revise its tickets. Explicit rerun and recovery behavior remain undecided.
+The public path uses the local Codex subscription session, invoked by a local scheduled task every two hours or manually. The private path responds to eligible issue creation and relevant label additions, and also supports manual invocation. Editing a source spec after publication does not automatically revise its tickets. Ordinary manual reruns report completion without changing a successfully published breakdown; revision requires an explicit request. Recovery from partial publication remains undecided.
 
 Workflow instructions must travel with the template; each adopting repository configures its own authentication and execution environment. No runtime has been enabled by this decision.
 
