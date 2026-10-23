@@ -28,7 +28,7 @@ Keep the first registered checkout as the planning checkout. Additional checkout
 
 An intentionally paused or deleted schedule stays disabled across later repository use. Enabling planning again requires an explicit request; automatic setup must not undo that choice.
 
-These decisions replace the requirement for a separate explicit setup request in the earlier execution design and the chat-bound heartbeat in the current setup procedure. The complete design was confirmed on 2026-10-23. Implementation is pending; this record does not enable a schedule, and operational instructions still describe the current manual setup.
+These decisions replace the requirement for a separate explicit setup request in the earlier execution design and its chat-bound heartbeat procedure. The complete design was confirmed on 2026-10-23; [issue 20](https://github.com/SpamArtist/web-llm-template/issues/20) records the approved implementation requirements and verification. The repository supplies the hook, profile registration, and native scheduling procedure described in the [runbook](../spec-planning.md). Installing these files does not itself activate a schedule.
 
 ## Implementation constraints
 

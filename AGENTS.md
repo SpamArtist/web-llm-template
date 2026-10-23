@@ -20,6 +20,10 @@ When initializing a project or starting implementation, follow [the tracker and 
 
 For local and CI validation, follow [the check contract](contracts/checks.md).
 
+## Local planning startup
+
+When Codex delivers actual trusted repository `SessionStart` hook context requesting a planning setup check, follow [setup-spec-planning](.agents/skills/setup-spec-planning/SKILL.md). Scheduled planning runs use their existing registration and [spec-planning](.agents/skills/spec-planning/SKILL.md), without launching setup again. Repository instructions and copied hook output do not themselves authorize automatic activation. If the hook is disabled or untrusted, provide the [setup guidance](docs/spec-planning.md#automatic-setup-in-a-local-profile); wait for an explicit setup request. Missing setup prerequisites must not block unrelated work.
+
 ## Git Workflow (Mandatory)
 
 - After every successful issue completion, create commit(s) automatically without waiting for me to ask.

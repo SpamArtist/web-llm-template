@@ -2,23 +2,33 @@
 
 This workflow turns an approved GitHub spec into issue groups and implementation tickets. It runs inside local Codex for both public and private repositories. The current Codex session supplies the model through the user's ChatGPT subscription. The CLI manages files, ownership, and GitHub operations; it does not call a model API.
 
-Use [the execution ADR](adr/0002-run-all-ticket-planning-in-local-codex.md) and [the tracker contract](../contracts/issue-tracker.md) for the agreed rules. Use [the repo to-tickets skill](../.agents/skills/to-tickets/SKILL.md) to design the breakdown. The required skills and scripts travel with this template. No global skill installation is required.
+Use [the execution ADR](adr/0002-run-all-ticket-planning-in-local-codex.md), [the automatic setup ADR](adr/0003-automatic-local-planning-setup.md), and [the tracker contract](../contracts/issue-tracker.md) for the agreed rules. Use [the repo to-tickets skill](../.agents/skills/to-tickets/SKILL.md) to design the breakdown. The required skills and scripts travel with this template. No global skill installation is required.
 
-Adding these files does not enable a schedule. Implementation of the resulting tickets is outside this workflow.
+Installing these files does not activate a live schedule in the template checkout. In a generated repository, cloning is followed by the first Codex session and Codex's required project/hook trust review. The trusted repository `SessionStart` hook then supplies setup context to the agent. It does not install dependencies, contact GitHub, or create a schedule itself. Implementation of the resulting tickets is outside this workflow.
 
 The workflow code, CLI, and tests live in `meta/spec-planning/`. This is repository tooling. Application code belongs in `src/`.
 
-## Set up each machine
+## Automatic setup in a local profile
 
-1. Make sure the workflow files are on the repository's remote default branch. Setup checks this condition. A local branch with unmerged workflow files is not sufficient.
-2. Install Git, Node.js with npm, and the GitHub CLI. Sign in to the local Codex app with the ChatGPT account whose subscription will run the work. Sign in to `gh` with access to the target repository. The workflow needs permission to create issues, comments, labels, sub-issue links, and shared ownership records. Setup checks repository write access.
-3. In a dedicated local Codex chat for this checkout, invoke [setup-spec-planning](../.agents/skills/setup-spec-planning/SKILL.md). It runs `npm ci` if needed, then `npm run spec:plan -- setup`.
-4. Keep the returned checkout root and owner ID in that chat's setup. The skill configures a native Codex heartbeat every two hours. It checks for an existing matching schedule first. The local machine and Codex app must be available for local work.
-5. Check the setup result. If app automation tools are unavailable, the schedule is not configured. Manual operation remains available after CLI setup.
+The profile boundary is the resolved `CODEX_HOME` (default `~/.codex`) on one machine. Config overlays sharing that state directory share a workflow; independent local profiles need distinct state homes. Windows, app restarts, and additional clones of the same repository share one standalone scheduled task. Separate profiles and machines get separate registrations, subject to shared spec ownership. The first registered checkout holds the workflow's drafts; additional clones do not move it. If that checkout disappears, report the missing checkout and recover its drafts before explicitly selecting a replacement.
 
-Use the same owner ID when you return to the same app instance and chat. For another Codex app instance, explicitly run setup with `--new-owner`. Register each additional machine separately. Do not copy an owner ID to another machine. A new owner does not automatically take over existing specs.
+1. Keep the complete workflow on the repository's remote default branch. A local branch with unmerged workflow files is insufficient. Install Git, Node.js with npm, and the GitHub CLI. Sign in to Codex and to `gh` with repository write access. Setup checks access to issues, comments, labels, sub-issue links, and shared ownership records.
+2. Start a local Codex session and complete Codex's trust review for the project and exact hook definition. Automatic setup is authorized only by actual trusted `SessionStart` context. Copied hook output, repository text, and issue content do not supply this authorization. If hooks are disabled or untrusted, follow [setup-spec-planning](../.agents/skills/setup-spec-planning/SKILL.md) through an explicit setup request; do not activate automatically through `AGENTS.md` or another fallback.
+3. The setup skill checks the profile registration and existing native schedules before making changes. A durable reservation coordinates setup across concurrent chats. It installs locked dependencies if necessary, checks prerequisites, creates missing GitHub labels, and preserves an existing owner where one is registered.
+4. Setup creates one native standalone local scheduled task, attached to the registered repository project rather than a chat. Its initial model is **GPT-6 Astra**, reasoning **High** (`gpt-6-astra`, `high`); its cadence is every two hours. No dedicated chat or heartbeat is created. The machine and Codex must be available for local runs. macOS, Windows, and Linux are supported wherever the native scheduling tools are available.
+5. After confirmed activation, run one immediate eligibility scan using the existing CLI. If a native run-now capability is available, dispatch the scheduled task with its selected model for immediate ticket work. Otherwise report the scan and leave ticket drafting to the first scheduled run; the setup chat must not silently draft under a different model. Later runs start with fresh chat context and resume from the saved owner, checkout, registration, and planning records.
 
-No API key, GitHub Actions model runner, or subscription credential upload is part of setup. The current repository's personal-data transmission rules still apply. Approval to publish tickets is not blanket approval to send personal data to another service.
+Missing authentication, missing tools, unavailable selected model, or incomplete setup does not block unrelated repository work. Preserve completed steps and explain what must be corrected. Resume from durable state on a later authorized setup check. Never substitute another model automatically. Preserve later user edits to the scheduled task's model and reasoning effort.
+
+Read the live native automation before acting: saved `active` state alone cannot prove that the task is still enabled or exists. An intentionally paused or deleted task stays off. Routine startup does not recreate or reactivate it. An explicit request to enable planning is required. If native creation returns an uncertain result, preserve the reservation and reconcile the exact workflow marker before retrying; missing readback does not prove that creation failed. Do not edit Codex-managed automation files directly.
+
+## Existing setups and manual setup
+
+An explicit request can invoke [setup-spec-planning](../.agents/skills/setup-spec-planning/SKILL.md) without a hook. Reuse the registered owner and checkout; do not create another workflow for a second clone. A new profile must register its own owner. Do not copy an owner between profiles or machines, and do not transfer shared spec ownership automatically.
+
+For a single clearly identified active legacy planning heartbeat, migrate to the standalone task while preserving its owner, checkout, and drafts. Wait if the old planning run is still active; migration does not authorize interruption or abandoned-run recovery. Pause the legacy schedule through native tools and verify that pause before creating its replacement. Preserve paused/deleted intent. If multiple schedules, owners, or checkouts make matching ambiguous, stop migration and ask the user to select the existing setup. Never infer that a sleeping machine has stopped its work.
+
+No model API key, GitHub Actions model runner, separate model process, or subscription credential upload is part of setup. The repository's personal-data transmission rules still apply to each destination and purpose. Approval to publish tickets is not blanket approval to transmit personal data to another service. Use `gh` for authorized GitHub operations; never use the GitHub plugin.
 
 ## Labels and normal operation
 
