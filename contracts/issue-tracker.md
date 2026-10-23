@@ -43,7 +43,9 @@ At the start of each run, record the current eligibility and approval state. Use
 
 Multiple machines can process the same repository. Each spec's planning session must have one owner: one machine and Codex app instance. Other machines or app instances must not process that spec at the same time. Different specs can have different owners.
 
-Scheduled and manual runs must respect the same session owner. The mechanism for recording ownership across machines and transferring ownership remains to be decided.
+Scheduled and manual runs must respect the same session owner. Store one shared ownership record per spec on GitHub. The first successful claim establishes the owner; other machines and app instances skip that spec. Keep ownership while the draft waits for approval.
+
+Transfer ownership only after an explicit user request. Do not transfer ownership automatically because the owner is asleep, offline, or temporarily disconnected. Recovery of local drafts after a transfer remains to be decided.
 
 ### Drafts, completion, and missing requirements
 
@@ -75,4 +77,4 @@ After all tickets and grouping issues are published and their contents, parent r
 
 Show complete drafts in local Codex. Add a short comment on the source issue when a draft is ready, publication completes, or work stops. The completion comment must identify the published issues. Do not repeat reports when nothing changes.
 
-The shared ownership mechanism and transfer procedure remain to be decided. These instructions do not establish a running automation.
+Draft recovery after ownership transfer, setup in generated repositories, and retry limits remain to be decided. The shared claim implementation must be checked for concurrent claims before use. These instructions do not establish a running automation.

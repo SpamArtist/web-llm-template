@@ -13,6 +13,12 @@ The work on one spec's ticket breakdown, including waits and recovery, through v
 **Planning run**:
 One scheduled or manual invocation within a planning session. Its eligibility and approval state are fixed when the run starts.
 
+**Ownership record**:
+The shared GitHub record that identifies the machine and Codex app instance responsible for a spec's planning session.
+
+**Ownership transfer**:
+A change of the planning session's owner after an explicit user request. An offline owner does not cause an automatic transfer.
+
 **Source spec**:
 The authoritative requirements issue from which a ticket breakdown is derived.
 _Avoid_: Implementation ticket
