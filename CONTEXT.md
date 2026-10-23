@@ -4,6 +4,9 @@ The language used to turn source specifications into reviewable implementation w
 
 ## Language
 
+**Ticket planning**:
+The work of reading a source spec and repository, preparing a ticket breakdown, and publishing and verifying approved tickets. It does not include implementing those tickets.
+
 **Source spec**:
 The authoritative requirements issue from which a ticket breakdown is derived.
 _Avoid_: Implementation ticket

@@ -57,4 +57,14 @@ If a run publishes only part of a breakdown, check the existing issues and relat
 
 Use a separate checkout of the latest remote default branch for planning. Record the commit used for the run. Do not include unfinished changes from the user's local working directory.
 
-Draft storage, coordination between runs, and result reporting remain to be designed. These instructions do not establish a running automation.
+### Draft storage and cleanup
+
+Keep draft files and recovery records in the main local checkout's ignored `.artifacts/spec-planning/` directory, outside temporary planning checkouts. Do not commit these files. Keep waiting drafts until publication or explicit removal.
+
+After all tickets and grouping issues are published and their contents, parent relationships, and blocking dependencies are verified on GitHub, remove that breakdown's local draft files and recovery records. Do not remove files for other specs or incomplete runs. Record completion on the source issue before cleanup so later runs can recognize completed publication without local files.
+
+### Result reports
+
+Show complete drafts in local Codex. Add a short comment on the source issue when a draft is ready, publication completes, or work stops. The completion comment must identify the published issues. Do not repeat reports when nothing changes.
+
+Coordination between runs and behavior after eligibility changes during a run remain to be decided. These instructions do not establish a running automation.
