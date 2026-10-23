@@ -6,6 +6,8 @@ Use [the execution ADR](adr/0002-run-all-ticket-planning-in-local-codex.md) and 
 
 Adding these files does not enable a schedule. Implementation of the resulting tickets is outside this workflow.
 
+The workflow code, CLI, and tests live in `meta/spec-planning/`. This is repository tooling. Application code belongs in `src/`.
+
 ## Set up each machine
 
 1. Make sure the workflow files are on the repository's remote default branch. Setup checks this condition. A local branch with unmerged workflow files is not sufficient.
@@ -82,7 +84,7 @@ The CLI is the publication entry point. Do not replace it with direct `gh issue 
 
 ## Draft format
 
-Write UTF-8 JSON to the returned draft path. [The owned types](../src/shared/spec-planning/planning.types.ts) define `Draft`. [The validator](../src/shared/spec-planning/draft.ts) checks its shape, coverage, and dependency graph. Read both when preparing a draft. Structural validation cannot prove that the model found every source requirement; Codex must check coverage against the complete spec.
+Write UTF-8 JSON to the returned draft path. [The owned types](../meta/spec-planning/shared/planning.types.ts) define `Draft`. [The validator](../meta/spec-planning/shared/draft.ts) checks its shape, coverage, and dependency graph. Read both when preparing a draft. Structural validation cannot prove that the model found every source requirement; Codex must check coverage against the complete spec.
 
 Use these fields:
 

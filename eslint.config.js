@@ -18,13 +18,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
+    files: ['src/**/*.{js,mjs,cjs,ts,tsx,mts,cts}', 'meta/spec-planning/{db,shared,use-cases}/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     rules: {
       'max-lines': ['error', 350],
     },
   },
   {
-    files: ['{src,tests}/**/*.{ts,tsx}'],
+    files: ['{src,tests}/**/*.{ts,tsx}', 'meta/spec-planning/{db,shared,use-cases,tests}/**/*.{ts,tsx}'],
     plugins: { local: { rules: { 'no-inline-types': noInlineTypes } } },
     rules: { 'local/no-inline-types': 'error' },
   },
@@ -44,7 +44,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/server/use-cases/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
+    files: ['src/server/use-cases/**/*.{js,mjs,cjs,ts,tsx,mts,cts}', 'meta/spec-planning/use-cases/**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     rules: {
       'no-restricted-imports': ['error', {
         paths: [

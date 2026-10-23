@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "tests", "scripts", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "eslint.config.js"]
+  "include": ["src", "tests", "scripts", "meta", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "eslint.config.js"]
 }

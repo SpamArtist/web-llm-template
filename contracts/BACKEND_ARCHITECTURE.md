@@ -2,6 +2,8 @@
 
 Use these module paths for new Node/TypeScript backend flows. The template has no `src/` tree yet; create modules when a workflow needs them.
 
+Repository tooling belongs in `meta/`. The spec-planning workflow keeps its shared logic, persistence adapters, use cases, CLI, and tests together in `meta/spec-planning/`. Reserve `src/` for application code.
+
 `HTTP adapter → use case → persistence functions → database`
 
 - `src/server/http/`: transport adapters authenticate at the HTTP edge, parse requests, call a use case, and map typed outcomes to HTTP responses. They do not import database modules or build queries.

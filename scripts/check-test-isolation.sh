@@ -7,7 +7,7 @@ if git grep --line-number --full-name -I -E \
   -e 'prototype[/\\]' \
   -e '(npm|pnpm|bun)[[:space:]]+(run|run-script)[[:space:]]+prototype([^[:alnum:]_-]|$)' \
   -e '(yarn|pnpm|bun)[[:space:]]+prototype([^[:alnum:]_-]|$)' \
-  -- ':(top)tests/'; then
+  -- ':(top)tests/' ':(top,glob)meta/**/tests/**'; then
   printf 'Tests must be independent of prototype paths and startup commands.\n' >&2
   exit 1
 else
