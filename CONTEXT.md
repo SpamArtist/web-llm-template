@@ -7,6 +7,12 @@ The language used to turn source specifications into reviewable implementation w
 **Ticket planning**:
 The work of reading a source spec and repository, preparing a ticket breakdown, and publishing and verifying approved tickets. It does not include implementing those tickets.
 
+**Planning session**:
+The work on one spec's ticket breakdown, including waits and recovery, through verified publication. One machine and Codex app instance own the session.
+
+**Planning run**:
+One scheduled or manual invocation within a planning session. Its eligibility and approval state are fixed when the run starts.
+
 **Source spec**:
 The authoritative requirements issue from which a ticket breakdown is derived.
 _Avoid_: Implementation ticket

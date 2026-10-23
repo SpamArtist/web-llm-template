@@ -24,7 +24,7 @@ Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) w
 - `spec`: identifies a source specification.
 - `ready-for-agent`: together with `spec`, makes a source spec eligible for ticket planning.
 - `auto-approve`: on an eligible source spec, authorizes publication of the complete locally generated breakdown without interactive approval, as defined by the repository skill. It does not authorize implementation.
-- `reference-only`: excludes the issue and all its descendants from automation, regardless of the other labels. Check ancestors as well as the source issue; descendants need not repeat this label.
+- `reference-only`: excludes the issue and all its descendants when a run starts, regardless of the other labels. Check ancestors as well as the source issue; descendants need not repeat this label.
 
 Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope.
 
@@ -36,6 +36,14 @@ Public and private repositories run ticket planning inside local Codex on the us
 - Each scheduled check uses `gh` to find eligible issues and check their current labels.
 - Adding `auto-approve` signals approval to publish the complete locally generated breakdown. Do not introduce a separate comment command or draft-version approval protocol. The other eligibility rules still apply.
 - Editing a source spec after publication must not automatically rewrite its published tickets.
+
+At the start of each run, record the current eligibility and approval state. Use that initial state for the active run. Later label changes or source-issue closure do not stop or change that run. A new run checks the current state again. Approval to continue the active run does not authorize changing the source issue's labels or reopening it.
+
+### Session ownership
+
+Multiple machines can process the same repository. Each spec's planning session must have one owner: one machine and Codex app instance. Other machines or app instances must not process that spec at the same time. Different specs can have different owners.
+
+Scheduled and manual runs must respect the same session owner. The mechanism for recording ownership across machines and transferring ownership remains to be decided.
 
 ### Drafts, completion, and missing requirements
 
@@ -67,4 +75,4 @@ After all tickets and grouping issues are published and their contents, parent r
 
 Show complete drafts in local Codex. Add a short comment on the source issue when a draft is ready, publication completes, or work stops. The completion comment must identify the published issues. Do not repeat reports when nothing changes.
 
-Coordination between runs and behavior after eligibility changes during a run remain to be decided. These instructions do not establish a running automation.
+The shared ownership mechanism and transfer procedure remain to be decided. These instructions do not establish a running automation.

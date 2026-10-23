@@ -12,9 +12,9 @@ The issue tracker and triage label vocabulary should have been provided to you â
 
 ## Automatic approval for GitHub specs
 
-When an existing GitHub source spec has all three labels `spec`, `ready-for-agent`, and `auto-approve`, treat the complete locally generated breakdown as approved for publication by this workflow. This is an exception only to this skill's human approval and quiz requirements; it does not waive drafting, requirement coverage, hierarchy, dependency, reconciliation, or verification requirements, or other repository eligibility rules.
+When an existing GitHub source spec has all three labels `spec`, `ready-for-agent`, and `auto-approve` at the start of a run, treat the complete locally generated breakdown as approved for publication by this workflow. This is an exception only to this skill's human approval and quiz requirements; it does not waive drafting, requirement coverage, hierarchy, dependency, reconciliation, or verification requirements, or other repository eligibility rules.
 
-Still draft every grouping-issue and implementation-ticket body, parent relationship, and blocking dependency locally before publishing. Skip the interactive quiz and approval wait in step 4, and proceed to step 5 with that complete draft. Re-read the source issue's labels before publication; if the three-label condition no longer holds, do not use this exception. Without this exception, follow the existing approval process unchanged. The label does not authorize implementation of the published tickets.
+Still draft every grouping-issue and implementation-ticket body, parent relationship, and blocking dependency locally before publishing. Skip the interactive quiz and approval wait in step 4, and proceed to step 5 with that complete draft. Read and record the source issue's labels and the repository's eligibility checks at the start of each run. Keep that initial eligibility and approval state for the active run; later label changes or source-issue closure do not withdraw this run's approval. A new run must check the current state again. Without this exception, follow the existing approval process unchanged. The label does not authorize implementation of the published tickets.
 
 ## Process
 
