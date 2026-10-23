@@ -16,3 +16,14 @@ Use the `gh` CLI for issue operations. Determine the repository from `git remote
 Read the approved issue or spec before implementation. Record requirement amendments and implementation decisions at that source so its current requirements remain authoritative. Durable documentation should link to it rather than copy an evolving issue body into `docs/`.
 
 When completing work, leave the commands, outcomes, and available CI link with the issue or canonical work item, following the [verification contract](verification.md).
+
+## Spec ticket planning
+
+Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) when breaking a source spec into tickets. Do not rely on a globally installed copy. The planning labels are:
+
+- `spec`: identifies a source specification.
+- `ready-for-agent`: together with `spec`, makes a source spec eligible for ticket planning.
+- `auto-approve`: on an eligible source spec, authorizes publication of the complete locally generated breakdown without interactive approval, as defined by the repository skill. It does not authorize implementation.
+- `reference-only`: excludes the issue and all its descendants from automation, regardless of the other labels. Check ancestors as well as the source issue; descendants need not repeat this label.
+
+Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope. The execution environment and approval-resumption mechanism remain to be designed; these instructions do not establish a running automation.
