@@ -51,6 +51,16 @@ npm run spec:plan -- publish --owner OWNER_ID --issue ISSUE_NUMBER --run RUN_ID
 
 The initial eligibility and approval state remains valid for the active run. Do not stop it because labels or source status change later. A new run reads current state. Do not edit the source issue's title, body, labels, or status.
 
+## Start the Orchestrator
+
+After this run's `publish` command succeeds, create one separate Orchestrator chat for that source spec. This approved post-publication step extends the older publication-only guidance; the planner still does not implement tickets itself. A `complete` result from `scan` or `begin` alone does not launch previously published work.
+
+1. Read the successful result's `published` map. Select only `ticket:*` entries, including reused tickets; use their `number` values as the exact ticket list. Set the first/last placeholders to the smallest/largest number. Do not include grouping issues or unrelated numbers between those bounds. If no implementation tickets exist, report that instead of launching.
+2. Set `integration_branch` to `LLM/spec-<source issue number>-integration`. Set `base_branch` to the source spec's `Integration base: <branch>` value, or `main` when absent. Use that existing branch; missing or ambiguous bases require clarification, not a fallback.
+3. Call native `list_projects` and select the registered Git project whose path matches the canonical planning checkout. Fill every placeholder in [orchestrator-prompt.md](orchestrator-prompt.md) using this repository, source issue, exact tickets, and branch names. Apply repository personal-data transmission rules to the rendered prompt and native request before sending them.
+4. Call native `create_thread` once with `title: "Orchestrator"`, `model: "gpt-6-luna"`, `thinking: "xhigh"`, and the rendered `prompt`. Use `target.type: "project"`, the matched `projectId`, and `target.environment: { type: "worktree", startingState: { type: "branch", branchName: base_branch } }`. Omit `onMissing`. The new chat creates its integration branch and starts work; no additional planner CLI or scheduler is needed.
+5. Report the returned chat using the native `::created-thread` directive (`threadId` when ready, `clientThreadId` when queued). A queued or uncertain response is not permission to create another chat. Missing project/model/tool access leaves publication complete; report the launch prerequisite without republishing tickets.
+
 ## Stop and recover
 
 If required decisions are missing, write precise questions to a text file in the session directory. Use `stop` with that file. Do the same for a failure that the CLI cannot record itself. Do not invent requirements, repeat an exhausted retry cycle, or retry an ambiguous issue creation by hand.
