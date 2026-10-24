@@ -1,3 +1,5 @@
+import type { HandoffRecord } from './handoff.types.js';
+
 export interface Issue {
   id: number;
   number: number;
@@ -60,6 +62,7 @@ export interface ClaimRecord {
   sourceHash?: string;
   reason?: string;
   published?: Record<string, number>;
+  handoff?: HandoffRecord;
 }
 export interface Claim {
   sha: string;
@@ -83,6 +86,7 @@ export interface GitHub {
   blockers(number: number): Promise<Issue[]>;
   block(number: number, blocker: Issue): Promise<void>;
   getClaim(number: number): Promise<Claim | null>;
+  listClaims(): Promise<Claim[]>;
   createClaim(record: ClaimRecord): Promise<Claim | null>;
   updateClaim(expected: Claim, record: ClaimRecord): Promise<Claim | null>;
 }

@@ -2,6 +2,7 @@ import type { GitHub, Issue, SessionState, SessionStore } from '../shared/planni
 import type { Publication } from './publish.types.js';
 import { groupBody, marker, orderedTickets, ticketBody } from './publish-body.js';
 import { assertUnchanged, checkOwner, reconcileBlockers, reconcileIssue, save, unsupportedDependencies } from './publish-reconcile.js';
+import { seedHandoff } from './handoff.js';
 
 async function verify(context: Publication, key: string, parent: Issue, blockers: Issue[] = []): Promise<void> {
   const record = context.state.published[key]!;
@@ -32,7 +33,8 @@ async function complete(context: Publication): Promise<void> {
     await github.comment(source, body);
   }
   const claim = await checkOwner(context);
-  if (!await github.updateClaim(claim, { ...claim.record, phase: 'complete', runId: null, published })) throw new Error('Spec ownership changed before completion.');
+  const handoff = seedHandoff(state.snapshot.repo, source, state.snapshot.sessionId, state.snapshot.source.body);
+  if (!await github.updateClaim(claim, { ...claim.record, phase: 'complete', runId: null, published, handoff })) throw new Error('Spec ownership changed before completion.');
   state.status = 'complete';
   await store.remove(source);
 }
@@ -52,6 +54,9 @@ export async function publishDraft(github: GitHub, store: SessionStore, state: S
     await store.remove(state.snapshot.source.number);
     return state;
   }
+  // Validate handoff inputs before any publication writes; persist intent only
+  // after the whole breakdown is verified. Old completed claims stay unchanged.
+  seedHandoff(state.snapshot.repo, state.snapshot.source.number, state.snapshot.sessionId, state.snapshot.source.body);
   const context: Publication = { github, store, state, issues: await github.allIssues(), dependencyFallback: new Set() };
   await checkOwner(context);
   state.status = 'publishing';

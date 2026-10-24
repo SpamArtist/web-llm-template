@@ -5,7 +5,8 @@ import { command } from './db/command.js';
 import { createGitHub } from './db/github.js';
 import { createLocalStore, loadConfig, registerOwner, assertOwner } from './db/local.js';
 import { prepareCheckout } from './db/checkout.js';
-import { eligibility } from './shared/eligibility.js';
+import { scanPlanning } from './use-cases/scan.js';
+import { runHandoffCommand } from './handoff-cli.js';
 import { validateDraft } from './shared/draft.js';
 import { beginSession, acceptDraft, stopSession } from './use-cases/session.js';
 import { publishDraft } from './use-cases/publish.js';
@@ -17,16 +18,19 @@ const { values, positionals } = parseArgs({
     owner: { type: 'string' }, issue: { type: 'string' }, run: { type: 'string' },
     file: { type: 'string' }, expected: { type: 'string' }, manual: { type: 'boolean' },
     'new-owner': { type: 'boolean' }, 'confirm-stopped': { type: 'boolean' },
+    step: { type: 'string' }, session: { type: 'string' }, project: { type: 'string' },
+    thread: { type: 'string' }, 'client-thread': { type: 'string' }, host: { type: 'string' },
+    'confirmed-absent': { type: 'boolean' },
   },
 });
 
-const usage = 'Commands: setup [--new-owner | --owner UUID], scan --owner UUID, begin --owner UUID --issue N [--manual], accept --owner UUID --issue N --run UUID --file draft.json, publish --owner UUID --issue N --run UUID, stop --owner UUID --issue N --run UUID --file questions.txt, status --owner UUID --issue N, recover --owner UUID --issue N --expected SHA --confirm-stopped, transfer --owner NEW_UUID --issue N --expected SHA [--confirm-stopped]';
+const usage = 'Commands: setup [--new-owner | --owner UUID], scan --owner UUID, begin --owner UUID --issue N [--manual], accept --owner UUID --issue N --run UUID --file draft.json, publish --owner UUID --issue N --run UUID, stop --owner UUID --issue N --run UUID --file questions.txt, status --owner UUID --issue N, recover --owner UUID --issue N --expected SHA --confirm-stopped, transfer --owner NEW_UUID --issue N --expected SHA [--confirm-stopped], handoff --owner UUID --issue N [--step inspect|enroll|reserve|prepare|create|record|recover] [--expected SHA] [--session CODEX_THREAD_ID] [--project ID] [--thread ID --host HOST | --client-thread ID] [--manual] [--confirm-stopped --confirmed-absent]';
 const action = positionals[0];
 const output = (value: unknown) => process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 
 async function main(): Promise<void> {
   if (!action || action === 'help') { console.log(usage); return; }
-  if (!['setup', 'scan', 'begin', 'accept', 'publish', 'stop', 'status', 'recover', 'transfer'].includes(action) || positionals.length !== 1) throw new Error(usage);
+  if (!['setup', 'scan', 'begin', 'accept', 'publish', 'stop', 'status', 'recover', 'transfer', 'handoff'].includes(action) || positionals.length !== 1) throw new Error(usage);
   const rootResult = await command('git', ['rev-parse', '--show-toplevel'], process.cwd());
   if (rootResult.failed) throw new Error(rootResult.stderr);
   const root = rootResult.stdout.trim();
@@ -41,6 +45,7 @@ async function main(): Promise<void> {
       '.agents/skills/spec-planning/SKILL.md', '.agents/skills/setup-spec-planning/SKILL.md',
       '.agents/skills/to-tickets/SKILL.md', 'meta/spec-planning/cli.ts', 'meta/spec-planning/use-cases/session.ts',
       '.codex/hooks.json', 'meta/spec-planning/bootstrap/cli.js', 'meta/spec-planning/hooks/session-start.js',
+      '.agents/skills/spec-orchestrator-handoff/SKILL.md', 'meta/spec-planning/use-cases/handoff.ts', 'meta/spec-planning/handoff-cli.ts',
     ]) {
       const installed = await command('gh', ['api', '--hostname', 'github.com', '--silent', `repos/${repo.slug}/contents/${path}?ref=${repo.defaultSha}`], root);
       if (installed.failed) throw new Error(`Install the complete planning workflow on the remote default branch before setup. Missing or inaccessible: ${path}`);
@@ -61,20 +66,12 @@ async function main(): Promise<void> {
   await loadConfig(root, owner, repo.slug);
   const store = await createLocalStore(root);
   if (action === 'scan') {
-    const results = [];
-    for (const issue of await github.candidates()) {
-      const result = await eligibility(github, repo.slug, issue);
-      const claim = await github.getClaim(issue.number);
-      const skip = !result.eligible || (claim && claim.record.ownerId !== owner);
-      results.push({ number: issue.number, title: issue.title,
-        action: skip ? 'skip' : claim?.record.phase === 'complete' ? 'complete' : claim?.record.phase === 'busy' ? 'busy' : claim?.record.phase === 'stopped' ? 'stopped' : 'eligible',
-        reason: !result.eligible ? result.reason : skip ? 'Another app instance owns this spec.' : claim?.record.reason, claim });
-    }
-    output(results);
+    output(await scanPlanning(github, repo.slug, owner));
     return;
   }
   const issue = Number(values.issue);
   if (!Number.isSafeInteger(issue) || issue < 1) throw new Error('Supply a positive --issue number.');
+  if (action === 'handoff') { output(await runHandoffCommand(github, root, repo.slug, owner, issue, values)); return; }
   if (action === 'status') { output({ claim: await github.getClaim(issue), state: await store.load(issue) }); return; }
   if (action === 'recover' || action === 'transfer') {
     if (!values.expected || !/^[a-f0-9]{40}$/.test(values.expected)) throw new Error('Supply --expected with the current claim SHA from status.');
@@ -115,7 +112,7 @@ async function main(): Promise<void> {
       output({ action: state.status === 'waiting' ? 'waiting' : 'publish', state });
     } else if (action === 'publish') {
       state = await publishDraft(github, store, state);
-      output({ action: 'complete', published: state.published });
+      output({ action: 'complete', published: state.published, handoff: (await github.getClaim(issue))?.record.handoff });
     } else if (action === 'stop') {
       if (!values.file) throw new Error('Supply --file with the questions or failure details as plain text.');
       const reason = (await readFile(values.file, 'utf8')).trim();

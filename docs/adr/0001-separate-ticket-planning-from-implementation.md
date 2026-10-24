@@ -1,6 +1,6 @@
 # Separate ticket planning from implementation
 
-The spec automation's scope ends with publishing and verifying a ticket breakdown. Implementing the resulting tickets belongs to a separately designed workflow, so publication and `ready-for-agent` labels do not cause this system to execute implementation work.
+The planner publishes and verifies a ticket breakdown; a separate workflow implements the resulting tickets. [ADR 0004](0004-handoff-published-specs-to-orchestrator-chats.md) supersedes the original prohibition on publication triggering implementation: future verified publications hand off to a separate Orchestrator chat. The planner itself does not implement tickets. The publication approval, exclusion, and revision rules below remain in force.
 
 An eligible source spec can carry `auto-approve` to authorize publication of the complete locally generated breakdown without interactive approval. Adding this label is the automation's approval signal; no separate comment command or draft-version approval protocol is required. Without the label, automation prepares the complete draft once and waits for the label before publishing. The repository's to-tickets skill retains its existing interactive approval process outside the automatic-approval exception. At the start of a run, `reference-only` excludes an issue and every descendant regardless of approval or trigger labels. The active run retains its initial eligibility and approval state; later label changes or source-issue closure do not change that state.
 

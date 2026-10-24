@@ -4,7 +4,7 @@ This workflow turns an approved GitHub spec into issue groups and implementation
 
 Use [the execution ADR](adr/0002-run-all-ticket-planning-in-local-codex.md), [the automatic setup ADR](adr/0003-automatic-local-planning-setup.md), and [the tracker contract](../contracts/issue-tracker.md) for the agreed rules. Use [the repo to-tickets skill](../.agents/skills/to-tickets/SKILL.md) to design the breakdown. The required skills and scripts travel with this template. No global skill installation is required.
 
-Installing these files does not activate a live schedule in the template checkout. In a generated repository, cloning is followed by the first Codex session and Codex's required project/hook trust review. The trusted repository `SessionStart` hook then supplies setup context to the agent. It does not install dependencies, contact GitHub, or create a schedule itself. Implementation of the resulting tickets is outside this workflow.
+Installing these files does not activate a live schedule in the template checkout. In a generated repository, cloning is followed by the first Codex session and Codex's required project/hook trust review. The trusted repository `SessionStart` hook then supplies setup context to the agent. It does not install dependencies, contact GitHub, or create a schedule itself. After future verified publications, the planner hands off to a separate Orchestrator chat that starts implementation immediately. The planner itself does not implement tickets. Installing this change does not activate planning or launch previously published breakdowns.
 
 The workflow code, CLI, and tests live in `meta/spec-planning/`. This is repository tooling. Application code belongs in `src/`.
 
@@ -67,9 +67,9 @@ Source spec
 └── Performance Review
 ```
 
-All three groups are containers. They receive no `ready-for-agent` label and are never closed automatically. Review containers remain empty. Their future review tickets must wait for every implementation ticket. Code review and performance review do not block each other.
+All three groups are containers. Publication gives them no `ready-for-agent` label and does not close them. The planner leaves review containers empty; later issue-status decisions belong to the Orchestrator. Their future review tickets must wait for every implementation ticket. Code review and performance review do not block each other.
 
-The publisher verifies issue content, labels, direct parents, and blocking links. If GitHub does not support native dependency endpoints, it verifies explicit `Blocked by` links in the issue bodies. It records completion and the issue map on GitHub before removing the local draft and recovery files. Files for other specs remain.
+The publisher verifies issue content, labels, direct parents, and blocking links. If GitHub does not support native dependency endpoints, it verifies explicit `Blocked by` links in the issue bodies. It records completion and the issue map on GitHub before removing the local draft and recovery files. Files for other specs remain. Shared handoff state survives cleanup so a failed or queued chat launch can resume independently of publication.
 
 ## Manual commands
 
@@ -80,7 +80,7 @@ npm run spec:plan -- scan --owner OWNER_ID
 npm run spec:plan -- begin --owner OWNER_ID --issue ISSUE_NUMBER --manual
 ```
 
-`scan` returns an array of issue numbers, titles, actions, and reasons. It can report `eligible`, `skip`, `stopped`, `busy`, or `complete`. `begin` acquires or checks ownership and returns the action, state, and paths for that run.
+`scan` returns an array of issue numbers, titles, actions, and reasons. It can report `eligible`, `skip`, `stopped`, `busy`, `complete`, or `handoff`. Shared records let `scan` find pending handoffs even when the source was closed or its trigger labels were removed. `begin` acquires or checks ownership and returns the action, state, and paths for that run.
 
 | `begin` action | Codex action |
 | --- | --- |
@@ -88,7 +88,7 @@ npm run spec:plan -- begin --owner OWNER_ID --issue ISSUE_NUMBER --manual
 | `publish` | Publish the saved draft using the returned run ID. |
 | `waiting` | Keep the draft and wait for the approval label. |
 | `skip` | Leave the spec unchanged; follow the reported reason. |
-| `complete` | Report existing completion for a manual request. Do not revise tickets. |
+| `complete` | Preserve existing publication. Resume its pending handoff when present; do not revise tickets. |
 
 Scheduled checks omit `--manual`. This prevents them from restarting stopped work. Do not repeatedly announce unchanged waiting, skipped, or complete results.
 
@@ -100,6 +100,28 @@ npm run spec:plan -- publish --owner OWNER_ID --issue ISSUE_NUMBER --run RUN_ID
 ```
 
 The CLI is the publication entry point. Do not replace it with direct `gh issue create` commands: that would bypass ownership and recovery checks. GitHub access inside the CLI uses `gh`, not a GitHub plugin.
+
+## Orchestrator handoff
+
+The approved behavior is recorded in [issue 23](https://github.com/SpamArtist/web-llm-template/issues/23); [ADR 0004](adr/0004-handoff-published-specs-to-orchestrator-chats.md) explains the changed boundary. Follow the repository-local [handoff skill](../.agents/skills/spec-orchestrator-handoff/SKILL.md) after publication returns a handoff or a later scan returns `handoff`. Ticket publication remains complete if native launch needs recovery or a prerequisite.
+
+Each future verified publication launches one `Orchestrator` chat immediately, using GPT-6 Luna / Extra High (`gpt-6-luna`, `xhigh`) in the saved project matching the canonical planning checkout. The prompt contains the exact implementation ticket list, including explicitly reused tickets; the first/last numbers summarize that list only. It retains the requested execution instructions. The planner does not impose a concurrency cap or implement dispatch pacing, approval coordination, or issue-status policy.
+
+The Orchestrator gets a new worktree on `LLM/spec-<source-number>-integration`. Its base defaults to `main`; a source spec can provide one standalone line, `Integration base: <branch>`. Missing or invalid bases stop handoff. Preparation pins the base commit and creates the integration branch without switching the user's checkout or resetting an existing branch. Conflicting branches stop preparation. Implementation chats use separate branches and worktrees based on the integration branch. Work merges into integration, never main.
+
+Shared GitHub state tracks `pending` → `reserved` → `creating` → `launched`. A compare-and-swap reservation belongs to one executor chat in addition to the planning owner. Preparation returns the exact `nativePreview` for transmission review while reserved; inspection also includes it once the destination is registered. A preview never authorizes dispatch. The dispatchable native create request is emitted only when the creation-intent transition succeeds. The CLI cannot create chats itself; the skill passes that returned request to native `create_thread`. Publication's ticket map and handoff state survive draft cleanup.
+
+Inspect handoff from the canonical checkout:
+
+```sh
+npm run spec:plan -- handoff --owner OWNER_ID --issue ISSUE_NUMBER --step inspect
+```
+
+Use the [skill's CLI protocol](../.agents/skills/spec-orchestrator-handoff/SKILL.md#cli-protocol) for reservation, preparation, dispatch recording, and recovery. Every mutation uses the latest claim SHA and the current executor's actual `CODEX_THREAD_ID`. An inspected `prepare-branch` action means the base is pinned but preparation must still run; repeat `--step prepare`, review its returned `nativePreview`, resolve required transmission approval, then use `begin-create` and the latest SHA for `--step create`. Never dispatch `nativePreview`; only a fresh `create` result authorizes sending `nativeRequest`. Inspect and match the saved project with native `list_projects` before reservation. Native tools and the requested model must be available; do not substitute a project or model. The repository's personal-data approval rules continue to apply to the exact native payload.
+
+A ready result records its real thread ID and host. Queued worktree setup records only `clientThreadId` and stays `creating` until native readback resolves the real thread. Unknown create outcomes are reconciled by the exact stable prompt marker, including archived chats where needed. Preserve the `creationAttemptId` nonce throughout reconciliation. A later run by the same registered planning owner may record the verified existing chat with its own session ID and fresh claim SHA; recording does not transfer reservation or permit another creation. Incomplete inventory never proves absence. Do not create a replacement because an earlier request timed out. Explicit stopped-executor recovery is required; a creation attempt additionally needs authoritative confirmation that no chat exists.
+
+Already published breakdowns without a handoff are not enrolled automatically. An explicit launch request permits `--step enroll --manual --expected CLAIM_SHA`; subsequent retries reuse the same handoff. Ordinary planning runs do not change published tickets or retroactively start old work. Installing this feature does not activate planning setup or alter an existing schedule.
 
 ## Draft format
 
@@ -131,7 +153,7 @@ The source issue receives a short report. The user updates its body and starts p
 
 Temporary read or safe operation failures can receive up to three retries after the first attempt. Missing permissions, invalid authentication, and conflicting requirements stop immediately. An uncertain issue or comment creation stops for manual reconciliation; it is not blindly repeated. A missing readback is not proof that creation failed. The next manual run uses stable markers to find existing issues and comments. After retries are exhausted, the work stops and keeps its recovery files. Scheduled checks do not begin a new retry cycle.
 
-A partial publication resumes the same breakdown without duplicates. Existing human edits cause a stop. After verified publication, ordinary manual starts report completion; revision requires a separate explicit request.
+A partial publication resumes the same breakdown without duplicates. Existing human edits cause a stop. After verified publication, ordinary starts preserve the published breakdown and resume its pending handoff when one exists; revision requires a separate explicit request. Legacy publications without a handoff require an explicit launch request.
 
 ## Recover or transfer ownership
 

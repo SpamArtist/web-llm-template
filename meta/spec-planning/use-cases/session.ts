@@ -27,7 +27,8 @@ export async function beginSession(github: GitHub, store: SessionStore, ownerId:
         await store.remove(issueNumber);
       }
     }
-    return { action: 'complete', reason: 'Tickets are already published. Use an explicit revision request to change them.' };
+    return { action: 'complete', reason: 'Tickets are already published. Use an explicit revision request to change them.',
+      ...(previousClaim.record.ownerId === ownerId && previousClaim.record.handoff ? { handoff: previousClaim.record.handoff } : {}) };
   }
   if (previousClaim && previousClaim.record.ownerId !== ownerId) return { action: 'skip', reason: 'Another machine owns this spec session. Request an explicit transfer.' };
   if (previousClaim?.record.phase === 'busy') return { action: 'skip', reason: 'A run is already active. Explicit recovery is required if the owner stopped.' };

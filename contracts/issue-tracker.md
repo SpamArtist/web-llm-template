@@ -5,7 +5,7 @@
 Choose one canonical tracker and identify the approved requirements before implementing work. For a generated repository hosted on GitHub, the default tracker is GitHub Issues. During initialization, replace the selections below with the project's choices:
 
 - **Tracker:** GitHub Issues for this repository.
-- **Approved spec location:** Each task's approved GitHub issue body. For template development, [issue 19](https://github.com/SpamArtist/web-llm-template/issues/19) records the local spec-planning runtime and [issue 20](https://github.com/SpamArtist/web-llm-template/issues/20) records the approved automatic local setup changes. Generated projects must select their own approved issues; this example does not authorize work in a generated project.
+- **Approved spec location:** Each task's approved GitHub issue body. For template development, [issue 19](https://github.com/SpamArtist/web-llm-template/issues/19) records the local spec-planning runtime and [issue 20](https://github.com/SpamArtist/web-llm-template/issues/20) records the approved automatic local setup changes. The published-spec Orchestrator handoff is approved in [issue 23](https://github.com/SpamArtist/web-llm-template/issues/23). Generated projects must select their own approved issues; this example does not authorize work in a generated project.
 
 **Customization point:** Teams using another tracker must replace these selections with its name, location, and approved-spec convention. If requirements live outside the tracker, link each work item to that authoritative spec. Keep one authoritative requirements source for each task.
 
@@ -25,10 +25,10 @@ Use the repository's [to-tickets skill](../.agents/skills/to-tickets/SKILL.md) w
 
 - `spec`: identifies a source specification.
 - `ready-for-agent`: together with `spec`, makes a source spec eligible for ticket planning.
-- `auto-approve`: on an eligible source spec, authorizes publication of the complete locally generated breakdown without interactive approval, as defined by the repository skill. It does not authorize implementation.
+- `auto-approve`: on an eligible source spec, authorizes publication of the complete locally generated breakdown without interactive approval, as defined by the repository skill. The label itself approves publication; the separately approved [Orchestrator handoff](../docs/adr/0004-handoff-published-specs-to-orchestrator-chats.md) starts implementation after future verified publications.
 - `reference-only`: excludes the issue and all its descendants when a run starts, regardless of the other labels. Check ancestors as well as the source issue; descendants need not repeat this label.
 
-Planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Implementation automation is outside this scope.
+Ticket planning ends after publishing and verifying the grouping issues, implementation tickets, and their relationships. Future verified publications then create one separate Orchestrator chat per spec through the [handoff skill](../.agents/skills/spec-orchestrator-handoff/SKILL.md). The planner never implements tickets itself. Existing published breakdowns require an explicit launch request; routine checks do not launch them retroactively.
 
 Public and private repositories run ticket planning inside local Codex on the user's machine. Use the local ChatGPT subscription session and this repository's skill and planning rules. See the [execution decision](../docs/adr/0002-run-all-ticket-planning-in-local-codex.md).
 
@@ -57,7 +57,7 @@ An eligible source spec without `auto-approve` gets a complete draft breakdown p
 
 If the source requirements change while the draft waits, make a new complete draft from the current requirements before publication. When `auto-approve` is present, publish the new draft under that label approval. Do not publish a draft based on obsolete requirements.
 
-After successful publication, ordinary manual invocations report that publication is complete and leave existing tickets unchanged. Revising a published breakdown requires an explicit revision request.
+After successful publication, ordinary invocations leave existing tickets unchanged and resume any pending handoff created by that publication. Older published breakdowns without a handoff remain complete without launching a chat. Revising a published breakdown requires an explicit revision request.
 
 When contradictory or missing requirements prevent a reliable breakdown, stop and report the specific questions on the source issue. Do not invent requirements to finish the breakdown. This rule also applies when `auto-approve` is present.
 
@@ -75,7 +75,7 @@ Use a separate checkout of the latest remote default branch for planning. Record
 
 Keep draft files and recovery records in the main local checkout's ignored `.artifacts/spec-planning/` directory, outside temporary planning checkouts. Do not commit these files. Keep waiting drafts until publication or explicit removal.
 
-After all tickets and grouping issues are published and their contents, parent relationships, and blocking dependencies are verified on GitHub, remove that breakdown's local draft files and recovery records. Do not remove files for other specs or incomplete runs. Record completion on the source issue before cleanup so later runs can recognize completed publication without local files.
+After all tickets and grouping issues are published and their contents, parent relationships, and blocking dependencies are verified on GitHub, remove that breakdown's local draft files and recovery records. Do not remove files for other specs or incomplete runs. Record completion on the source issue before cleanup so later runs can recognize completed publication without local files. Preserve the shared handoff record, exact ticket set, dependency graph, branch choice, and chat identity independently of the cleaned-up draft.
 
 ### Result reports
 

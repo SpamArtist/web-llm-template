@@ -70,6 +70,7 @@ export class FakeGitHub implements GitHub {
   }
   async block(number: number, blocker: Issue): Promise<void> { this.dependencies.set(number, [...this.dependencies.get(number) ?? [], blocker.number]); this.writes.push('block'); }
   async getClaim(): Promise<Claim> { return structuredClone(this.claim); }
+  async listClaims(): Promise<Claim[]> { return [structuredClone(this.claim)]; }
   async createClaim(): Promise<Claim | null> { return null; }
   async updateClaim(expected: Claim, record: ClaimRecord): Promise<Claim | null> {
     if (expected.sha !== this.claim.sha) return null;

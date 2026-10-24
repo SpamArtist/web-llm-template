@@ -1,6 +1,6 @@
 ---
 name: spec-planning
-description: Process eligible GitHub spec issues in local Codex. Draft and publish ticket breakdowns with the repository's to-tickets skill, shared ownership, and recovery records. Does not implement tickets.
+description: Process eligible GitHub spec issues in local Codex. Draft and publish ticket breakdowns with the repository's to-tickets skill, shared ownership, recovery records, and separate Orchestrator handoff. Does not implement tickets itself.
 ---
 
 # Spec planning
@@ -30,7 +30,7 @@ npm run spec:plan -- scan --owner OWNER_ID
 npm run spec:plan -- begin --owner OWNER_ID --issue ISSUE_NUMBER
 ```
 
-For an explicit manual start, add `--manual` to `begin`. A scheduled check must not use it. Process each returned spec through `begin`; another machine can own a different spec. Respect `skip`, `waiting`, and `complete` results. Do not clear a busy session or transfer ownership automatically.
+For an explicit manual start, add `--manual` to `begin`. A scheduled check must not use it. Process each returned spec through `begin`; another machine can own a different spec. Respect `skip`, `waiting`, and publication `complete` results. A pending Orchestrator handoff is separate from completed publication: follow the repository-local [handoff skill](../spec-orchestrator-handoff/SKILL.md) for pending handoffs returned by `scan` and after verified `publish`. Reuse the existing publication; do not draft or publish again to retry handoff. Do not clear a busy session or transfer ownership automatically.
 
 The CLI checks the source and its ancestors for `reference-only`. The example spec #18 in the original template repository and its descendants must never be processed. This does not exclude issue #18 in a generated repository.
 
@@ -61,4 +61,4 @@ npm run spec:plan -- stop --owner OWNER_ID --issue ISSUE_NUMBER --run RUN_ID --f
 
 The user supplies answers in the source issue body, then starts work manually. Follow the runbook for an explicit ownership transfer or abandoned-run recovery. Preserve human edits. If transferred files are unavailable, rebuild unpublished work only when the same breakdown can be recovered reliably.
 
-The CLI reports meaningful changes on the source issue and removes local draft files only after verified publication. Keep scheduled checks quiet when nothing changes. Report missing permissions, missing app tools, or a required user action. Do not implement tickets or populate the review containers.
+The CLI reports meaningful changes on the source issue and removes local draft files only after verified publication. The shared handoff record survives this cleanup. Complete or resume handoff through the repository-local handoff skill; legacy publications require an explicit launch request. A failed handoff does not undo publication. Keep scheduled checks quiet when nothing changes. Report missing permissions, missing app tools, or a required user action. Do not implement tickets or populate the review containers.
