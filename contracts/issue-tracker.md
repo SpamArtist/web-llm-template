@@ -9,6 +9,8 @@ Choose one canonical tracker and identify the approved requirements before imple
 
 **Customization point:** Teams using another tracker must replace these selections with its name, location, and approved-spec convention. If requirements live outside the tracker, link each work item to that authoritative spec. Keep one authoritative requirements source for each task.
 
+Direct user initialization commands `let's initialize this repo`, `init`, `let's go boiii`, and `davai` also request the repository-local [setup-spec-planning](../.agents/skills/setup-spec-planning/SKILL.md) workflow. Run it as part of initialization, including when the startup hook is unavailable or disabled. Follow the skill's registration, reconciliation, and prerequisite checks; reuse existing setup and preserve intentionally disabled schedules. A mention or quotation of a command does not invoke it. The template change is approved in [issue 22](https://github.com/SpamArtist/web-llm-template/issues/22).
+
 ## GitHub workflow
 
 Use the `gh` CLI for issue operations. Determine the repository from `git remote get-url origin`; never hard-code the template repository's slug. Run `gh` from that checkout, or pass `--repo` with the owner/repository derived from `origin` when explicit selection is needed.

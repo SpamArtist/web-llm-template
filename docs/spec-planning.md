@@ -24,6 +24,15 @@ Read the live native automation before acting: saved `active` state alone cannot
 
 ## Existing setups and manual setup
 
+To initialize a repository and set up its planning workflow, issue any one of these commands directly in the repository's Codex chat:
+
+- `let's initialize this repo`
+- `init`
+- `let's go boiii`
+- `davai`
+
+Each command invokes the repository-local setup skill alongside tracker and approved-spec initialization. These are chat commands, not shell commands. They work as explicit setup requests even when the startup hook is disabled or unavailable. Repeating a command reconciles the existing registration and schedule instead of creating another workflow. Intentionally paused or deleted schedules still require an explicit re-enable request. Quoting a phrase or asking to edit this list does not start initialization. Missing prerequisites leave setup incomplete and are reported without blocking unrelated work.
+
 An explicit request can invoke [setup-spec-planning](../.agents/skills/setup-spec-planning/SKILL.md) without a hook. Reuse the registered owner and checkout; do not create another workflow for a second clone. A new profile must register its own owner. Do not copy an owner between profiles or machines, and do not transfer shared spec ownership automatically.
 
 For a single clearly identified active legacy planning heartbeat, migrate to the standalone task while preserving its owner, checkout, and drafts. Wait if the old planning run is still active; migration does not authorize interruption or abandoned-run recovery. Pause the legacy schedule through native tools and verify that pause before creating its replacement. Preserve paused/deleted intent. If multiple schedules, owners, or checkouts make matching ambiguous, stop migration and ask the user to select the existing setup. Never infer that a sleeping machine has stopped its work.
