@@ -1,5 +1,4 @@
 import type { SessionState } from '../shared/planning.types.js';
-import type { HandoffRecord } from '../shared/handoff.types.js';
 
 export interface SessionOptions {
   manual?: boolean;
@@ -13,5 +12,4 @@ export interface SessionResult {
   action: 'draft' | 'publish' | 'waiting' | 'skip' | 'complete';
   state?: SessionState;
   reason?: string;
-  handoff?: HandoffRecord;
 }

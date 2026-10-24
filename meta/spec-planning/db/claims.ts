@@ -1,7 +1,6 @@
 import type { Claim, ClaimRecord, Repository } from '../shared/planning.types';
-import type { GitCommit, GitHubRequest, GitRef, NamedGitRef } from './github.types';
+import type { GitCommit, GitHubRequest, GitRef } from './github.types';
 import { GitHubError } from './github-transport';
-import { validateHandoff } from '../shared/handoff.js';
 
 const prefix = 'spec-planning-claim-v1\n';
 const branch = (number: number) => {
@@ -18,7 +17,6 @@ function decode(message: string, number: number): ClaimRecord {
     || !(record.runId === null || typeof record.runId === 'string')) {
     throw new Error('Invalid planning claim record.');
   }
-  if (record.handoff !== undefined) validateHandoff(record.handoff, number, record.sessionId);
   return record;
 }
 
@@ -60,21 +58,6 @@ export function createClaims(request: GitHubRequest, repository: () => Promise<R
 
   return {
     getClaim,
-    async listClaims(): Promise<Claim[]> {
-      const claims: Claim[] = [];
-      // Matching refs returns the complete array; unlike issue lists, this
-      // endpoint has no page/per_page parameters.
-      const refs = await request<NamedGitRef[]>('GET', '/git/matching-refs/heads/LLM/spec-planning/');
-      for (const ref of refs) {
-        const match = /^refs\/heads\/LLM\/spec-planning\/([1-9]\d*)$/.exec(ref.ref);
-        if (!match) continue;
-        const number = Number(match[1]);
-        if (!Number.isSafeInteger(number)) throw new Error('Invalid planning claim ref number.');
-        const commit = await request<GitCommit>('GET', `/git/commits/${ref.object.sha}`);
-        claims.push({ sha: commit.sha, record: decode(commit.message, number) });
-      }
-      return claims;
-    },
     createClaim: (record: ClaimRecord) => write(null, record),
     updateClaim: (expected: Claim, record: ClaimRecord) => write(expected, record),
   };

@@ -17,9 +17,6 @@ function fakeGitHub() {
   const request: GitHubRequest = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
     if (failure !== undefined) throw new GitHubError(failure);
     const input = body as { sha: string; tree: string; parents: string[]; message: string; ref: string; force: boolean };
-    if (method === 'GET' && path === '/git/matching-refs/heads/LLM/spec-planning/') {
-      return [...refs].map(([ref, sha]) => ({ ref: `refs/${ref}`, object: { sha } })) as T;
-    }
     if (method === 'GET' && path.startsWith('/git/ref/')) {
       const sha = refs.get(path.slice('/git/ref/'.length));
       if (!sha) throw new GitHubError(404);
@@ -59,13 +56,6 @@ function fakeGitHub() {
 }
 
 describe('shared spec claims', () => {
-  it('lists shared records independently of source labels and ignores neighboring refs', async () => {
-    const fake = fakeGitHub();
-    const claims = createClaims(fake.request, repository);
-    const claim = await claims.createClaim(record('machine-a'));
-    fake.refs.set('heads/LLM/spec-planning/7-unrelated', 'base');
-    expect(await claims.listClaims()).toEqual([claim]);
-  });
   it('allows exactly one machine to claim a spec during a race', async () => {
     const fake = fakeGitHub();
     const first = createClaims(fake.request, repository);

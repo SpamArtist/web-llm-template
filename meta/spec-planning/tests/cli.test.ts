@@ -49,7 +49,7 @@ describe('setup CLI entry point', () => {
     const initialGh = await readState();
     expect(initialGh.labels).toEqual(['spec', 'ready-for-agent', 'auto-approve', 'reference-only']);
     expect(initialGh.writes).toHaveLength(4);
-    expect(initialGh.requests.filter(({ endpoint }) => endpoint.includes('/contents/'))).toHaveLength(11);
+    expect(initialGh.requests.filter(({ endpoint }) => endpoint.includes('/contents/'))).toHaveLength(8);
     const secondRun = await cli('setup');
     expect(secondRun.failed).toBe(false);
     expect((JSON.parse(secondRun.stdout) as CliSetupResult).config).toEqual(first.config);

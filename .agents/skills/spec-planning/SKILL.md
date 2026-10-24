@@ -1,6 +1,6 @@
 ---
 name: spec-planning
-description: Process eligible GitHub spec issues in local Codex. Draft and publish ticket breakdowns with the repository's to-tickets skill, shared ownership, recovery records, and separate Orchestrator handoff. Does not implement tickets itself.
+description: Process eligible GitHub spec issues in local Codex. Draft and publish ticket breakdowns with the repository's to-tickets skill, shared ownership, and recovery records. Does not implement tickets.
 ---
 
 # Spec planning
@@ -30,7 +30,7 @@ npm run spec:plan -- scan --owner OWNER_ID
 npm run spec:plan -- begin --owner OWNER_ID --issue ISSUE_NUMBER
 ```
 
-For an explicit manual start, add `--manual` to `begin`. A scheduled check must not use it. Process each returned spec through `begin`; another machine can own a different spec. Respect `skip`, `waiting`, and publication `complete` results. A pending Orchestrator handoff is separate from completed publication: follow the repository-local [handoff skill](../spec-orchestrator-handoff/SKILL.md) for pending handoffs returned by `scan` and after verified `publish`. Reuse the existing publication; do not draft or publish again to retry handoff. Do not clear a busy session or transfer ownership automatically.
+For an explicit manual start, add `--manual` to `begin`. A scheduled check must not use it. Process each returned spec through `begin`; another machine can own a different spec. Respect `skip`, `waiting`, and `complete` results. Do not clear a busy session or transfer ownership automatically.
 
 The CLI checks the source and its ancestors for `reference-only`. The example spec #18 in the original template repository and its descendants must never be processed. This does not exclude issue #18 in a generated repository.
 
@@ -51,6 +51,16 @@ npm run spec:plan -- publish --owner OWNER_ID --issue ISSUE_NUMBER --run RUN_ID
 
 The initial eligibility and approval state remains valid for the active run. Do not stop it because labels or source status change later. A new run reads current state. Do not edit the source issue's title, body, labels, or status.
 
+## Start the Orchestrator
+
+After this run's `publish` command succeeds, create one separate Orchestrator chat for that source spec. This approved post-publication step extends the older publication-only guidance; the planner still does not implement tickets itself. A `complete` result from `scan` or `begin` alone does not launch previously published work.
+
+1. Read the successful result's `published` map. Select only `ticket:*` entries, including reused tickets; use their `number` values as the exact ticket list. Set the first/last placeholders to the smallest/largest number. Do not include grouping issues or unrelated numbers between those bounds. If no implementation tickets exist, report that instead of launching.
+2. Set `integration_branch` to `LLM/spec-<source issue number>-integration`. Set `base_branch` to the source spec's `Integration base: <branch>` value, or `main` when absent. Use that existing branch; missing or ambiguous bases require clarification, not a fallback.
+3. Call native `list_projects` and select the registered Git project whose path matches the canonical planning checkout. Fill every placeholder in [orchestrator-prompt.md](orchestrator-prompt.md) using this repository, source issue, exact tickets, and branch names. Apply repository personal-data transmission rules to the rendered prompt and native request before sending them.
+4. Call native `create_thread` once with `title: "Orchestrator"`, `model: "gpt-6-luna"`, `thinking: "xhigh"`, and the rendered `prompt`. Use `target.type: "project"`, the matched `projectId`, and `target.environment: { type: "worktree", startingState: { type: "branch", branchName: base_branch } }`. Omit `onMissing`. The new chat creates its integration branch and starts work; no additional planner CLI or scheduler is needed.
+5. Report the returned chat using the native `::created-thread` directive (`threadId` when ready, `clientThreadId` when queued). A queued or uncertain response is not permission to create another chat. Missing project/model/tool access leaves publication complete; report the launch prerequisite without republishing tickets.
+
 ## Stop and recover
 
 If required decisions are missing, write precise questions to a text file in the session directory. Use `stop` with that file. Do the same for a failure that the CLI cannot record itself. Do not invent requirements, repeat an exhausted retry cycle, or retry an ambiguous issue creation by hand.
@@ -61,4 +71,4 @@ npm run spec:plan -- stop --owner OWNER_ID --issue ISSUE_NUMBER --run RUN_ID --f
 
 The user supplies answers in the source issue body, then starts work manually. Follow the runbook for an explicit ownership transfer or abandoned-run recovery. Preserve human edits. If transferred files are unavailable, rebuild unpublished work only when the same breakdown can be recovered reliably.
 
-The CLI reports meaningful changes on the source issue and removes local draft files only after verified publication. The shared handoff record survives this cleanup. Complete or resume handoff through the repository-local handoff skill; legacy publications require an explicit launch request. A failed handoff does not undo publication. Keep scheduled checks quiet when nothing changes. Report missing permissions, missing app tools, or a required user action. Do not implement tickets or populate the review containers.
+The CLI reports meaningful changes on the source issue and removes local draft files only after verified publication. Keep scheduled checks quiet when nothing changes. Report missing permissions, missing app tools, or a required user action. Do not implement tickets or populate the review containers.

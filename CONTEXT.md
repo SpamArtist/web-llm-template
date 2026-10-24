@@ -44,26 +44,6 @@ A complete ticket breakdown prepared for publication but not yet published.
 **Published breakdown**:
 A ticket breakdown whose issues and relationships have been published and verified in the tracker.
 
-**Orchestrator chat**:
-The coordinating chat for one source spec's published implementation tickets, including their dependencies and independent final review.
-_Avoid_: Planning session
-
-**Orchestrator handoff**:
-The transition from a verified published breakdown to its separate Orchestrator chat. Publication can be complete while handoff still awaits a prerequisite.
-
-**Integration branch**:
-The branch that gathers verified implementation work for one source spec before any separately authorized merge to the project’s main branch.
-
-**Integration base**:
-The branch from which a source spec’s integration branch begins.
-
-**Implementation chat**:
-A separate chat responsible for one implementation ticket's user stories and acceptance criteria.
-_Avoid_: Orchestrator chat, planning run
-
-**Implementation ticket set**:
-The exact implementation tickets belonging to one published breakdown. A first-to-last issue-number range is only a summary, not membership.
-
 **Revision request**:
 An explicit request to change a previously published breakdown, distinct from an ordinary invocation that checks completion.
 

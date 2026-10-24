@@ -11,7 +11,7 @@ function github(parents: Map<number, Issue> = new Map()): GitHub {
     repository: unavailable, issue: unavailable, candidates: unavailable, children: unavailable, allIssues: unavailable,
     comments: unavailable, comment: unavailable, createIssue: unavailable, updateIssue: unavailable,
     addLabels: unavailable, ensureLabel: unavailable, attach: unavailable, blockers: unavailable, block: unavailable,
-    getClaim: unavailable, listClaims: unavailable, createClaim: unavailable, updateClaim: unavailable,
+    getClaim: unavailable, createClaim: unavailable, updateClaim: unavailable,
   };
 }
 

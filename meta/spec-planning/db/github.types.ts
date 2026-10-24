@@ -37,10 +37,6 @@ export interface GitRef {
   object: { sha: string };
 }
 
-export interface NamedGitRef extends GitRef {
-  ref: string;
-}
-
 export interface CommandResult {
   stdout: string;
   stderr: string;
