@@ -11,7 +11,17 @@ Read [the runbook](../../../docs/spec-planning.md), [the tracker contract](../..
 
 ## Select work
 
-Use the explicit checkout root and owner ID from this chat's setup. Do not register a new owner during a scheduled check. If setup is missing, stop and use [setup-spec-planning](../setup-spec-planning/SKILL.md) when the user requests setup.
+Use the canonical checkout and owner from the standalone task prompt and profile registration, never from another chat's history. Explicit manual runs use the registered checkout/owner supplied by setup. Do not register owners or create schedules during a planning run. Missing setup requires [setup-spec-planning](../setup-spec-planning/SKILL.md) through an explicit request or actual trusted hook context.
+
+For a scheduled run, read `node meta/spec-planning/bootstrap/cli.js status` from the canonical checkout. Match the prompt's exact workflow marker, repository, root, and owner to the record. Read the registered automation ID through native `automation_update` with `mode: view`. Verify this is the one active standalone local task for that marker/project; preserve its current model and reasoning settings. If native tools, the selected model, or the checkout are unavailable, stop and report the missing prerequisite. Never substitute a model. A saved active record alone is insufficient. Paused, deleted, unknown, or conflicting native state must not run planning; use `native-reconcile --state paused|deleted|unknown --automation AUTOMATION_ID` with the observed single state, and stop. Do not automatically restore or replace it.
+
+After native verification, run the local guard before `scan` or `begin`:
+
+```sh
+node meta/spec-planning/bootstrap/cli.js guard --owner OWNER_ID --automation AUTOMATION_ID --state active
+```
+
+The `active` argument records a just-observed native result, not an assumption. Proceed only if the guard succeeds. Run ticket drafting with the scheduled task's selected model/effort; the initial configuration is `gpt-6-astra` / `high`. Resume saved drafts, stopped state, and run IDs from durable CLI records. Manual runs still obey registered ownership and existing recovery rules; an explicit manual planning request does not reactivate a paused schedule.
 
 Run CLI commands from that root:
 

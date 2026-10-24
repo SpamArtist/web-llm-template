@@ -1,0 +1,19 @@
+{
+  "description": "Check local spec-planning setup after a trusted Codex session starts or resumes. No installation, network access, or scheduling occurs inside the hook.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "planning_root=\"$(git rev-parse --show-toplevel 2>/dev/null)\" && /bin/sh \"$planning_root/meta/spec-planning/hooks/session-start.sh\" || printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Local spec-planning setup is incomplete: Git or the repository root is unavailable. Continue unrelated work; restore the prerequisite and start or resume Codex to retry.\"}}'",
+            "commandWindows": "powershell.exe -NoLogo -NoProfile -NonInteractive -Command \"$ErrorActionPreference='Stop'; try { $planningRoot = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0) { throw 'Repository root unavailable' }; & (Join-Path $planningRoot 'meta/spec-planning/hooks/session-start.ps1') } catch { Write-Output 'Local spec-planning setup is incomplete: Git, PowerShell script execution, or the repository root is unavailable. Continue unrelated work; restore the prerequisite and start or resume Codex to retry.' }; exit 0\"",
+            "timeout": 5,
+            "additionalContextLimit": 3000
+          }
+        ]
+      }
+    ]
+  }
+}

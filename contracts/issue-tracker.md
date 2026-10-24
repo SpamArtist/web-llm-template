@@ -5,7 +5,7 @@
 Choose one canonical tracker and identify the approved requirements before implementing work. For a generated repository hosted on GitHub, the default tracker is GitHub Issues. During initialization, replace the selections below with the project's choices:
 
 - **Tracker:** GitHub Issues for this repository.
-- **Approved spec location:** Each task's approved GitHub issue body. For template development, [issue 19](https://github.com/SpamArtist/web-llm-template/issues/19) records the approved local spec-planning work. Generated projects must select their own approved issues; this example does not authorize work in a generated project.
+- **Approved spec location:** Each task's approved GitHub issue body. For template development, [issue 19](https://github.com/SpamArtist/web-llm-template/issues/19) records the local spec-planning runtime and [issue 20](https://github.com/SpamArtist/web-llm-template/issues/20) records the approved automatic local setup changes. Generated projects must select their own approved issues; this example does not authorize work in a generated project.
 
 **Customization point:** Teams using another tracker must replace these selections with its name, location, and approved-spec convention. If requirements live outside the tracker, link each work item to that authoritative spec. Keep one authoritative requirements source for each task.
 
@@ -41,7 +41,7 @@ At the start of each run, record the current eligibility and approval state. Use
 
 ### Session ownership
 
-Multiple machines can process the same repository. Each spec's planning session must have one owner: one machine and Codex app instance. Other machines or app instances must not process that spec at the same time. Different specs can have different owners.
+Multiple machines can process the same repository. Each spec's planning session must have one owner: one local Codex profile on one machine. Windows and restarts share a profile registration. Other machines or app instances must not process that spec at the same time. Different specs can have different owners.
 
 Scheduled and manual runs must respect the same session owner. Store one shared ownership record per spec on GitHub. The first successful claim establishes the owner; other machines and app instances skip that spec. Keep ownership while the draft waits for approval.
 
@@ -81,7 +81,11 @@ Show complete drafts in local Codex. Add a short comment on the source issue whe
 
 ### Setup in generated repositories
 
-Provide one setup procedure in the repository for users to run through local Codex. The procedure must check authentication and permissions, create missing labels, and configure the two-hour schedule. Each machine requires explicit setup. Keep the required skill and workflow instructions in this repository; do not depend on globally installed skills.
+Provide the repository-local setup skill and trusted `SessionStart` hook described in [the automatic setup decision](../docs/adr/0003-automatic-local-planning-setup.md). After Codex's project and hook trust review, actual hook context authorizes automatic setup without a separate activation request. A clone alone does not execute setup. Untrusted or disabled hooks get guidance; no fallback automatically activates planning. Explicit manual setup remains available.
+
+Setup checks authentication and permissions, creates missing labels, and configures one standalone native scheduled task per repository per local Codex profile. Coordinate concurrent attempts through durable local registration, preserve the first checkout, and reconcile native automation identity before retrying unknown creation outcomes. Use GPT-6 Astra High initially and preserve later user model edits. Missing prerequisites or model access leave setup incomplete without blocking unrelated work; never silently substitute models.
+
+After confirmed activation, scan immediately, then run every two hours. Ticket drafting must use the selected scheduling model. Runs resume from durable records without setup-chat history. Preserve intentionally paused/deleted schedules. Migration of a clearly identified active heartbeat preserves owner, checkout, and drafts and pauses the old schedule before replacement; it does not interrupt active runs or transfer spec ownership. Keep the required skills and workflow instructions in this repository; do not depend on globally installed skills.
 
 ### Retry limits
 

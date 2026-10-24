@@ -1,5 +1,7 @@
 # Run all ticket planning in local Codex
 
+The [automatic setup decision](0003-automatic-local-planning-setup.md) supersedes this record's explicit per-machine setup procedure with a trusted hook and one standalone schedule per repository per local Codex profile. The execution and shared-ownership rules below remain in force.
+
 Public and private repositories use local Codex on the user's machine for ticket planning. Use the local ChatGPT subscription session. GitHub Actions is not an execution path for ticket planning; the existing repository check workflows are outside this decision.
 
 Use a local scheduled task every two hours, with a manual start option. Read issue data and publish approved tickets through `gh`. The repository supplies the skill and workflow instructions. Each user sets up local authentication and the local schedule for repositories made from this template.

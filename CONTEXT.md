@@ -4,6 +4,18 @@ The language used to turn source specifications into reviewable implementation w
 
 ## Language
 
+**Local planning workflow**:
+The recurring ticket-planning arrangement for one repository in one local Codex profile, scheduled independently of any existing chat. Additional checkouts of that repository in the same profile share this workflow.
+
+**Local Codex profile**:
+The persistent local Codex environment on one machine that defines the app-instance boundary for planning. Its planning workflows are shared across windows and survive app restarts; separate profiles have separate workflows.
+
+**Planning setup**:
+Establishment of a local planning workflow, complete when its prerequisites are satisfied and its recurring schedule is confirmed active.
+
+**Planning checkout**:
+The registered checkout used by a local planning workflow for its commands and saved drafts. Additional checkouts share the workflow without replacing its planning checkout.
+
 **Ticket planning**:
 The work of reading a source spec and repository, preparing a ticket breakdown, and publishing and verifying approved tickets. It does not include implementing those tickets.
 
